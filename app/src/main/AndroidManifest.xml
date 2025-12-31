@@ -2,33 +2,52 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.neatnest">
 
+    <!-- Permissions for storage access (Media focused) -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    
+    <!-- Post Notifications for Android 13+ -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:allowBackup="true"
-        android:label="NeatNest Intent Demo"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="NeatNest"
         android:theme="@style/Theme.NeatNest">
 
         <activity
-            android:name=".AntiClutterActivity"
+            android:name=".DigitalAssetHubActivity"
             android:exported="false" />
 
         <activity
-            android:name=".MessageCleanerActivity"
+            android:name=".SignalNoiseCleanerActivity"
             android:exported="false" />
 
         <activity
-            android:name=".StudyCollectorActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".MainActivity"
+            android:name=".OnboardingActivity"
             android:exported="true">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
+        <service
+            android:name=".NotificationService"
+            android:label="NeatNest Signal Noise Cleaner"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
 
     </application>
 
