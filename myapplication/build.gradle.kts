@@ -1,15 +1,16 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.symbol.processing)
 }
 
 android {
-    namespace = "com.example.neatnest"
-    compileSdk = 36
+    namespace = "com.example.myapplication"
+    compileSdk {
+        version = release(36)
+    }
 
     defaultConfig {
-        applicationId = "com.example.neatnest"
+        applicationId = "com.example.myapplication"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -39,23 +40,8 @@ android {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.documentfile)
-    
-    // Room
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
-    
-    // WorkManager
-    implementation(libs.androidx.work.runtime.ktx)
-
-    // Lifecycle (for asLiveData)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
-
     testImplementation(libs.junit)
+    implementation(libs.material)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

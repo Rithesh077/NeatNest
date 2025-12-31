@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Welcome to NeatNest"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginTop="48dp"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="To clear your digital chaos, we need your permission to access storage and notifications."
+        android:gravity="center"
+        android:layout_marginBottom="32dp"/>
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/switchStorage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Storage Access (Files &amp; Media)"
+        android:padding="16dp"
+        android:layout_marginBottom="8dp"/>
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/switchNotifications"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Notification Access (Signal Noise)"
+        android:padding="16dp"
+        android:layout_marginBottom="8dp"/>
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/switchBackground"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Allow Background Scanning"
+        android:padding="16dp"
+        android:layout_marginBottom="32dp"/>
+
+    <Button
+        android:id="@+id/btnContinue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Scan and Start"
+        android:layout_marginBottom="16dp"/>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:indeterminate="true" />
+
+    <TextView
+        android:id="@+id/tvScanStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Scanning local files and signals..."
+        android:visibility="gone"
+        android:layout_marginTop="8dp"/>
+
+</LinearLayout>

@@ -2,42 +2,40 @@ package com.example.neatnest
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
-import android.widget.Toast
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.asLiveData
 
 class MainActivity : AppCompatActivity() {
 
-    private val TAG = "Lifecycle-Main"
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate called")
-        Toast.makeText(this, "MainActivity: onCreate", Toast.LENGTH_SHORT).show()
         setContentView(R.layout.activity_main)
 
-        val btnStudy = findViewById<Button>(R.id.btnStudyCollector)
-        val btnMsg = findViewById<Button>(R.id.btnMessageCleaner)
-        val btnClutter = findViewById<Button>(R.id.btnAntiClutter)
+        val btnDigitalHub = findViewById<Button>(R.id.btnDigitalAssetHub)
+        val btnSignalNoise = findViewById<Button>(R.id.btnSignalNoiseCleaner)
+        val tvAssetCount = findViewById<TextView>(R.id.tvAssetCount)
+        val tvSignalCount = findViewById<TextView>(R.id.tvSignalCount)
 
-        btnStudy.setOnClickListener {
-            startActivity(Intent(this, StudyCollectorActivity::class.java))
+        val database = AppDatabase.getDatabase(this)
+        
+        // Observe Asset Stats
+        database.processedFileDao().getProcessedFilesCount().asLiveData().observe(this) { count ->
+            tvAssetCount.text = "Assets Organized: $count"
         }
 
-        btnMsg.setOnClickListener {
-            startActivity(Intent(this, MessageCleanerActivity::class.java))
+        // Observe Signal Stats
+        database.processedNotificationDao().getNotificationCount().asLiveData().observe(this) { count ->
+            tvSignalCount.text = "Signals Cleaned: $count"
         }
 
-        btnClutter.setOnClickListener {
-            startActivity(Intent(this, AntiClutterActivity::class.java))
+        btnDigitalHub.setOnClickListener {
+            startActivity(Intent(this, DigitalAssetHubActivity::class.java))
+        }
+
+        btnSignalNoise.setOnClickListener {
+            startActivity(Intent(this, SignalNoiseCleanerActivity::class.java))
         }
     }
-
-    override fun onStart() { super.onStart(); Log.d(TAG,"onStart"); Toast.makeText(this,"onStart",Toast.LENGTH_SHORT).show() }
-    override fun onResume() { super.onResume(); Log.d(TAG,"onResume"); Toast.makeText(this,"onResume",Toast.LENGTH_SHORT).show() }
-    override fun onPause() { super.onPause(); Log.d(TAG,"onPause"); }
-    override fun onStop() { super.onStop(); Log.d(TAG,"onStop"); }
-    override fun onRestart() { super.onRestart(); Log.d(TAG,"onRestart"); }
-    override fun onDestroy() { super.onDestroy(); Log.d(TAG,"onDestroy"); }
 }

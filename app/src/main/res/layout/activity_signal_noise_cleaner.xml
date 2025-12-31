@@ -7,16 +7,16 @@
     android:padding="24dp">
 
     <TextView
-        android:text="Smart Study Collector"
+        android:text="Signal Noise Cleaner"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:paddingBottom="20dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:paddingBottom="20dp"/>
 
     <Button
-        android:id="@+id/btnOpenPdf"
-        android:text="Open Sample PDF (Implicit Intent)"
+        android:id="@+id/btnShareImportant"
+        android:text="Grant Notification Access"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

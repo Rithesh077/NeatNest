@@ -9,96 +9,65 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <!-- TITLE -->
         <TextView
-            android:text="NeatNest — Study Productivity Tools"
+            android:text="NeatNest Dashboard"
             android:textSize="22sp"
             android:textStyle="bold"
             android:paddingBottom="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <!-- BUTTONS SECTION -->
+        <!-- Analytics Section -->
+        <androidx.cardview.widget.CardView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:text="System Status"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:id="@+id/tvAssetCount"
+                    android:text="Assets Organized: 0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tvSignalCount"
+                    android:text="Signals Cleaned: 0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
         <Button
-            android:id="@+id/btnStudyCollector"
-            android:text="Smart Study Collector"
-            android:padding="12dp"
+            android:id="@+id/btnDigitalAssetHub"
+            android:text="Enter Digital Asset Hub"
+            android:padding="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <Button
-            android:id="@+id/btnMessageCleaner"
+            android:id="@+id/btnSignalNoiseCleaner"
             android:text="Signal Noise Cleaner"
             android:padding="12dp"
             android:layout_marginTop="12dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
-        <Button
-            android:id="@+id/btnAntiClutter"
-            android:text="Anti-Clutter Module"
-            android:padding="12dp"
-            android:layout_marginTop="12dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <!-- NEW LAYOUT SECTION (ConstraintLayout) -->
-        <!-- Added xmlns:app namespace declaration here -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="30dp">
-
-            <TextView
-                android:id="@+id/tvEduHeader"
-                android:text="📘 Education Tools Overview"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingBottom="10dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"/>
-
-            <TextView
-                android:id="@+id/tvEduDesc"
-                android:text="This app helps students organize notes, extract reminders, and manage clutter efficiently."
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/tvEduHeader"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <!-- NEW LAYOUT SECTION (TableLayout) -->
-        <TableLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="20dp">
-
-            <TableRow>
-                <TextView
-                    android:text="Subject"
-                    android:textStyle="bold"
-                    android:padding="8dp"/>
-                <TextView
-                    android:text="Time"
-                    android:textStyle="bold"
-                    android:padding="8dp"/>
-            </TableRow>
-
-            <TableRow>
-                <TextView android:text="Math" android:padding="8dp"/>
-                <TextView android:text="10:00 AM" android:padding="8dp"/>
-            </TableRow>
-
-            <TableRow>
-                <TextView android:text="Physics" android:padding="8dp"/>
-                <TextView android:text="12:00 PM" android:padding="8dp"/>
-            </TableRow>
-
-        </TableLayout>
 
     </LinearLayout>
 

@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "NeatNest"
 include(":app")
- 
+include(":myapplication")
