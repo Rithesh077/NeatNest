@@ -1,6 +1,7 @@
 package com.example.neatnest
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -19,6 +20,18 @@ interface ProcessedFileDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProcessedFile(file: ProcessedFile)
+}
+
+@Dao
+interface TrackedFolderDao {
+    @Query("SELECT * FROM tracked_folders")
+    fun getAllTrackedFolders(): Flow<List<TrackedFolder>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertFolder(folder: TrackedFolder)
+
+    @Delete
+    suspend fun removeFolder(folder: TrackedFolder)
 }
 
 @Dao

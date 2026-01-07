@@ -1,72 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="24dp"
-    android:gravity="center_horizontal">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Welcome to NeatNest"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginTop="48dp"
-        android:layout_marginBottom="16dp"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="To clear your digital chaos, we need your permission to access storage and notifications."
-        android:gravity="center"
-        android:layout_marginBottom="32dp"/>
-
-    <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/switchStorage"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Storage Access (Files &amp; Media)"
-        android:padding="16dp"
-        android:layout_marginBottom="8dp"/>
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center_horizontal">
 
-    <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/switchNotifications"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Notification Access (Signal Noise)"
-        android:padding="16dp"
-        android:layout_marginBottom="8dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NeatNest Onboarding"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="16dp"/>
 
-    <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/switchBackground"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Allow Background Scanning"
-        android:padding="16dp"
-        android:layout_marginBottom="32dp"/>
+        <!-- Permission Toggles -->
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switchNotifications"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Notification Access (Signal Noise)"
+            android:padding="12dp"/>
 
-    <Button
-        android:id="@+id/btnContinue"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Scan and Start"
-        android:layout_marginBottom="16dp"/>
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switchBackground"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Allow Background Scanning"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"/>
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:indeterminate="true" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#DDDDDD"
+            android:layout_marginBottom="16dp"/>
 
-    <TextView
-        android:id="@+id/tvScanStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Scanning local files and signals..."
-        android:visibility="gone"
-        android:layout_marginTop="8dp"/>
+        <!-- Scan Mode Selection -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Scanning Mode"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
 
-</LinearLayout>
+        <RadioGroup
+            android:id="@+id/rgScanMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+            <RadioButton
+                android:id="@+id/rbCompleteScan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Complete Device Scan (All Files Access)"/>
+            <RadioButton
+                android:id="@+id/rbPickFolders"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pick specific folders to scan"/>
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/btnPickSourceFolders"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Folders to Scan"
+            android:visibility="gone"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/tvPickedFolders"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No source folders selected"
+            android:textSize="12sp"
+            android:visibility="gone"
+            android:layout_marginBottom="16dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#DDDDDD"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Target Root Selection -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Organization Destination"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <Button
+            android:id="@+id/btnSelectRoot"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Root Organization Folder"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/tvRootPath"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No destination folder selected"
+            android:textSize="12sp"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Move vs Copy Toggle -->
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switchMoveFiles"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Move files (delete original) instead of copy"
+            android:padding="12dp"
+            android:layout_marginBottom="24dp"/>
+
+        <Button
+            android:id="@+id/btnStart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Begin Ingestion &amp; Classification"
+            android:padding="16dp"/>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_marginTop="16dp"
+            android:indeterminate="true" />
+
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Starting automated pipeline..."
+            android:visibility="gone"
+            android:layout_marginTop="8dp"/>
+
+    </LinearLayout>
+</ScrollView>

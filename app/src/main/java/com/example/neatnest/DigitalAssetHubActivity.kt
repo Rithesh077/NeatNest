@@ -9,7 +9,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.documentfile.provider.DocumentFile
 
 class DigitalAssetHubActivity : AppCompatActivity() {
 
@@ -53,27 +52,6 @@ class DigitalAssetHubActivity : AppCompatActivity() {
 
         btnSetup.setOnClickListener {
             dirPickerLauncher.launch(null)
-        }
-    }
-
-    /**
-     * Foundational logic to organize a file based on its extension.
-     */
-    private fun organizeFile(fileUri: Uri, fileName: String) {
-        val root = rootUri?.let { DocumentFile.fromTreeUri(this, it) } ?: return
-        
-        val extension = fileName.substringAfterLast('.', "").lowercase()
-        if (extension.isEmpty()) return
-
-        var targetDir = root.findFile(extension)
-        if (targetDir == null || !targetDir.isDirectory) {
-            targetDir = root.createDirectory(extension)
-        }
-
-        targetDir?.let {
-            // Actual file movement will be handled by a centralized utility
-            // that uses contentResolver.openInputStream and targetDir.createFile
-            Toast.makeText(this, "Organizing $fileName into /${extension}/", Toast.LENGTH_SHORT).show()
         }
     }
 }
