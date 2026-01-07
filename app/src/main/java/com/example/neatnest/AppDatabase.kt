@@ -5,10 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [ProcessedFile::class, ProcessedNotification::class], version = 2, exportSchema = false)
+@Database(entities = [ProcessedFile::class, ProcessedNotification::class, TrackedFolder::class], version = 3, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun processedFileDao(): ProcessedFileDao
     abstract fun processedNotificationDao(): ProcessedNotificationDao
+    abstract fun trackedFolderDao(): TrackedFolderDao
 
     companion object {
         @Volatile
