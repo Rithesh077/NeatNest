@@ -1,11 +1,4 @@
 package com.example.neatnest
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
-@Entity(tableName = "tracked_folders")
-data class TrackedFolder(
-    @PrimaryKey val uri: String,
-    val folderName: String,
-    val dateAdded: Long = System.currentTimeMillis()
-)
+// canonical model lives in data.model
+typealias TrackedFolder = com.example.neatnest.data.model.TrackedFolder

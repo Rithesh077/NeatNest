@@ -1,61 +1,17 @@
 package com.example.neatnest
 
-import android.net.Uri
+// classifies files by name into study material, clutter, or uncategorized
+object DigitalAssetHub {
 
-/**
- * Core logic engine for the Digital Asset Hub.
- * Handles the foundational classification and processing for Study Materials and Anti-Clutter.
- */
-class DigitalAssetHub {
+    enum class AssetType { STUDY_MATERIAL, DIGITAL_CLUTTER, UNCATEGORIZED }
 
-    enum class AssetType {
-        STUDY_MATERIAL,
-        DIGITAL_CLUTTER,
-        UNCATEGORIZED
+    fun classifyByName(fileName: String): AssetType = when {
+        STUDY_KEYWORDS.any { fileName.contains(it, ignoreCase = true) } -> AssetType.STUDY_MATERIAL
+        fileName.endsWith(".pdf", ignoreCase = true) -> AssetType.STUDY_MATERIAL
+        CLUTTER_KEYWORDS.any { fileName.contains(it, ignoreCase = true) } -> AssetType.DIGITAL_CLUTTER
+        else -> AssetType.UNCATEGORIZED
     }
 
-    data class Asset(
-        val uri: Uri,
-        val type: AssetType,
-        val metadata: Map<String, String> = emptyMap()
-    )
-
-    /**
-     * Foundational pipeline for classifying incoming files.
-     * This will eventually be replaced by TinyML integration.
-     */
-    fun classifyAsset(uri: Uri, fileName: String): AssetType {
-        return when {
-            isStudyRelated(fileName) -> AssetType.STUDY_MATERIAL
-            isClutterRelated(fileName) -> AssetType.DIGITAL_CLUTTER
-            else -> AssetType.UNCATEGORIZED
-        }
-    }
-
-    private fun isStudyRelated(fileName: String): Boolean {
-        val studyKeywords = listOf("lecture", "assignment", "exam", "notes", "quiz", "textbook")
-        return studyKeywords.any { fileName.contains(it, ignoreCase = true) } || fileName.endsWith(".pdf", ignoreCase = true)
-    }
-
-    private fun isClutterRelated(fileName: String): Boolean {
-        val clutterKeywords = listOf("meme", "whatsapp", "temp", "junk", "screenshot")
-        return clutterKeywords.any { fileName.contains(it, ignoreCase = true) }
-    }
-
-    /**
-     * Foundational logic for "Actioning" an asset based on its classification.
-     */
-    fun processAsset(asset: Asset) {
-        when (asset.type) {
-            AssetType.STUDY_MATERIAL -> {
-                // Logic for "Auto-organize" (e.g., Tagging, OCR extraction)
-            }
-            AssetType.DIGITAL_CLUTTER -> {
-                // Logic for "Flagging" (e.g., preparing for cleaning suggestions)
-            }
-            AssetType.UNCATEGORIZED -> {
-                // Default handling
-            }
-        }
-    }
+    private val STUDY_KEYWORDS = listOf("lecture", "assignment", "exam", "notes", "quiz", "textbook")
+    private val CLUTTER_KEYWORDS = listOf("meme", "whatsapp", "temp", "junk", "screenshot")
 }

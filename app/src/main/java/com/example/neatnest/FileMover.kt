@@ -2,43 +2,35 @@ package com.example.neatnest
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
+import android.webkit.MimeTypeMap
 import androidx.documentfile.provider.DocumentFile
-import java.io.InputStream
-import java.io.OutputStream
 
-/**
- * Utility class to handle foundational file movement (Copy logic).
- */
+// copies a file to target directory using content resolver
 object FileMover {
 
-    /**
-     * Copies a file from the source URI to a target directory in the Scoped Storage tree.
-     */
-    fun copyFileToDirectory(context: Context, sourceUri: Uri, targetDir: DocumentFile, fileName: String): Boolean {
+    fun copyFileToDirectory(context: Context, sourceUri: Uri, targetDir: DocumentFile, fileName: String, mimeType: String?): DocumentFile? {
         return try {
-            val contentResolver = context.contentResolver
-            
-            // 1. Create the target file in the subdirectory
-            val targetFile = targetDir.createFile("*/*", fileName) ?: return false
+            val resolver = context.contentResolver
+            val finalMime = mimeType
+                ?: MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileName.substringAfterLast('.'))
+                ?: "*/*"
 
-            // 2. Open streams
-            val inputStream: InputStream? = contentResolver.openInputStream(sourceUri)
-            val outputStream: OutputStream? = contentResolver.openOutputStream(targetFile.uri)
+            val targetFile = targetDir.createFile(finalMime, fileName) ?: return null
 
-            if (inputStream != null && outputStream != null) {
-                // 3. Copy the bits
-                inputStream.use { input ->
-                    outputStream.use { output ->
-                        input.copyTo(output)
-                    }
-                }
-                true
+            val input = resolver.openInputStream(sourceUri)
+            val output = resolver.openOutputStream(targetFile.uri)
+
+            if (input != null && output != null) {
+                input.use { i -> output.use { o -> i.copyTo(o) } }
+                targetFile
             } else {
-                false
+                targetFile.delete()
+                null
             }
         } catch (e: Exception) {
-            e.printStackTrace()
-            false
+            Log.e("FileMover", "copy failed: $fileName", e)
+            null
         }
     }
 }

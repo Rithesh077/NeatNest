@@ -1,56 +1,130 @@
-# NeatNest: Intelligent Digital Workspace for Students
+# NeatNest
 
-## Project Overview
-NeatNest is an Android application designed to reduce the cognitive load on students by organizing their digital chaos through on-device intelligence. It focuses on three core pillars: **Privacy**, **Automation**, and **Clarity**. The app intercepts system notifications and scans local storage to classify and organize information into a structured, study-friendly environment.
+NeatNest is an Android file organizer and notification tracker that helps users declutter their digital lives. It automatically scans, categorizes, and organizes files from selected source folders into a structured root directory, while simultaneously capturing and classifying device notifications by importance.
 
-## Phase 1: Foundational Architecture & Workflow
-The current project state establishes the **Foundational Data Pipeline**—the underlying "pipes" that allow data to flow from ingestion to organization without manual effort.
+## Features
 
-### 1. Ingestion & Onboarding (`OnboardingActivity.kt`)
-**Intention**: To establish trust and gain the necessary system-level access before any processing begins.
-- **Permission Centralization**: Uses a single-screen toggle system to request Media Storage, Notification Listening, and Battery Optimization Ignore permissions.
-- **Background Readiness**: By requesting `ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS`, the app ensures that the background scanner isn't killed by aggressive system power management.
-- **Foundational Scan**: Triggers an initial data ingestion simulation to prepare the user for the dashboard experience.
+### Digital Asset Hub
 
-### 2. The Intelligence Engine (`DigitalAssetHub.kt`)
-**Intention**: To create a modular classification system that can evolve from basic logic to advanced ML.
-- **Classification Logic**: Uses metadata (file extensions and keywords) to categorize files as `STUDY_MATERIAL` (e.g., .pdf, "lecture") or `DIGITAL_CLUTTER` (e.g., .jpg, "whatsapp").
-- **Unified Logic**: Merges the previously separate "Smart Study" and "Anti-Clutter" modules into a single processing engine, reducing code redundancy.
+- **File Scanning:** Scans user-selected folders (SAF) or the entire device (MediaStore) for images, videos, and audio files.
+- **Smart Classification:** Uses `DigitalAssetHub` to categorize files as Study Material, Clutter, or by extension (jpg, pdf, mp3, etc.).
+- **Move or Copy:** Users choose whether to move files (deleting originals) or copy them safely.
+- **Background Sync:** Optional periodic re-scans every 4 hours via WorkManager.
+- **Reset & Restore:** One-tap reset that restores all organized files back to Downloads and clears app state.
 
-### 3. Automated Data Pipeline (`AssetScannerWorker.kt` & `FileMover.kt`)
-**Intention**: To implement "Automatic Actions" with zero manual effort from the user.
-- **Background Scanning**: Utilizes `WorkManager` and `CoroutineWorker` to query `MediaStore` in the background for new assets.
-- **Direct Organization**: Automatically creates subdirectories named after file extensions (e.g., `/pdf/`) within a user-selected root directory.
-- **Duplicate Prevention**: Before moving a file, the system checks both the filesystem and the database to ensure no redundant copies are created.
-- **Secure Bit-Stream Copying**: `FileMover` handles the physical transfer of data using Scoped Storage APIs, ensuring compatibility with modern Android security.
+### Signal Noise Cleaner
 
-### 4. Persistent State Management (`AppDatabase.kt`)
-**Intention**: To ensure the app has "Memory" and operates efficiently.
-- **Room Persistence**: Stores metadata for every processed file and notification.
-- **Scan Optimization**: The `isFileProcessed` query prevents the app from re-scanning the same 10,000 images every cycle, significantly saving battery and CPU.
-- **Multi-Entity Tracking**: Tracks both `ProcessedFile` (assets) and `ProcessedNotification` (signals) in a unified local database.
+- **Notification Capture:** A `NotificationListenerService` intercepts all device notifications in real-time.
+- **Priority Classification:** Automatically classifies notifications as Most Important, Normal, Low, or Least Important.
+- **Clear All Noise:** One-tap button to permanently wipe all captured notifications and reset counts to 0.
 
-### 5. Centralized Analytics Dashboard (`MainActivity.kt`)
-**Intention**: To provide the user with a "At-a-glance" status of their digital environment.
-- **Reactive UI**: Uses `LiveData` and `Flow` to observe the Room database. The "Assets Organized" and "Signals Cleaned" stats update in real-time as the background worker operates.
-- **Modular Entry Points**: Provides direct access to the **Signal Noise Cleaner** and the **Digital Asset Hub**.
+### Dev Mode
 
-### 6. Signal Noise Interception (`NotificationService.kt`)
-**Intention**: To capture data at the source of distraction.
-- **Notification Listener**: Inherits from `NotificationListenerService` to intercept raw notification streams.
-- **Metadata Extraction**: Extracts titles and package names to begin the classification into priority sets (Phase 2 feature).
+- **Fragment Lifecycle Viewer:** Live display of Android Fragment lifecycle callbacks.
+- **Menu Demonstrations:** Options Menu (toolbar icons), Context Menu (long-press), and Pop-up Menu with forced icon display.
+- **AlertDialog Showcase:** Confirmation dialogs for delete and archive actions.
 
----
+### Utility Hub
 
-## Technical Stack
-- **Language**: Kotlin with Coroutines (for non-blocking IO).
-- **Architecture**: MVVM-lite with a Repository-style data pipeline.
-- **Database**: Room (SQL-based on-device storage).
-- **Background**: WorkManager (for robust, deferrable background tasks).
-- **Security**: Scoped Storage & Notification Listener APIs.
-- **Future Migration**: Potential tech migration to React Native.
+- **Rescan Files:** Trigger a manual file organization scan.
+- **Upcoming Tools:** Placeholders for Video Editor, File Editor, Data Extractor, and Price Tracker.
 
-## Future Scope (Phase 2)
-- **TinyML Integration**: Migrating from keyword-based logic to on-device neural networks for image and text classification.
-- **Advanced Prioritization**: Ranking notifications from "Least Important" to "Most Important" based on student-specific context.
-- **Physical Migration**: Finalizing the "Move" logic (Delete original after copy) for fully automated device cleaning.
+## Architecture
+
+```
+com.example.neatnest/
+├── MainActivity.kt              # Dashboard (launcher)
+├── OnboardingActivity.kt        # Folder setup and scan configuration
+├── DigitalAssetHubActivity.kt   # Organized files viewer
+├── SignalNoiseCleanerActivity.kt # Notification viewer
+├── FileMoverActivity.kt         # Dev Mode (menus + fragments)
+├── UtilityHubActivity.kt        # Utility tools
+├── AssetScannerWorker.kt        # Background file scanner (WorkManager)
+├── ResetWorker.kt               # Background reset/restore (WorkManager)
+├── NotificationService.kt       # Notification listener service
+├── FileMover.kt                 # File copy utility
+├── DigitalAssetHub.kt           # Smart file classifier
+├── PermissionManager.kt         # Centralized permission checks
+├── data/
+│   ├── local/
+│   │   ├── AppDatabase.kt       # Room database (singleton)
+│   │   ├── ProcessedFileDao.kt
+│   │   ├── ProcessedNotificationDao.kt
+│   │   ├── TrackedFolderDao.kt
+│   │   └── NeatNestPreferences.kt
+│   ├── model/
+│   │   ├── ProcessedFile.kt
+│   │   ├── ProcessedNotification.kt
+│   │   ├── TrackedFolder.kt
+│   │   └── RecentActivityItem.kt
+│   └── repository/
+│       ├── FileRepository.kt
+│       └── NotificationRepository.kt
+├── ui/
+│   ├── main/DashboardViewModel.kt
+│   ├── onboarding/OnboardingViewModel.kt
+│   ├── assethub/AssetHubViewModel.kt
+│   ├── signalcleaner/SignalCleanerViewModel.kt
+│   └── common/UiState.kt
+└── di/AppModule.kt              # Koin dependency injection
+```
+
+## Tech Stack
+
+| Component       | Technology                                  |
+| --------------- | ------------------------------------------- |
+| Language        | Kotlin                                      |
+| UI              | XML Layouts + Material Design 3             |
+| Database        | Room (SQLite)                               |
+| Background Work | WorkManager                                 |
+| DI              | Koin                                        |
+| Architecture    | MVVM (ViewModel + StateFlow/LiveData)       |
+| File Access     | Storage Access Framework (SAF) + MediaStore |
+| Min SDK         | 24 (Android 7.0)                            |
+| Target SDK      | 36                                          |
+
+## Permissions
+
+| Permission                           | Purpose                        |
+| ------------------------------------ | ------------------------------ |
+| `READ_EXTERNAL_STORAGE`              | Legacy file access (API < 33)  |
+| `READ_MEDIA_IMAGES`                  | Image scanning (API 33+)       |
+| `READ_MEDIA_VIDEO`                   | Video scanning (API 33+)       |
+| `READ_MEDIA_AUDIO`                   | Audio scanning (API 33+)       |
+| `POST_NOTIFICATIONS`                 | Notification display (API 33+) |
+| `BIND_NOTIFICATION_LISTENER_SERVICE` | Capture device notifications   |
+
+## Building
+
+1. Open the project in Android Studio (Ladybug or later recommended).
+2. Sync Gradle (File → Sync Project with Gradle Files).
+3. Run on a device or emulator (API 24+).
+
+> **Note:** The `kotlinOptions.jvmTarget` is set to `"11"` to match `compileOptions`. If you see JVM target mismatch errors, ensure your JDK version is 11+.
+
+## App Flow
+
+```
+┌─────────────────┐
+│   MainActivity   │  ← App opens here (Launcher)
+│   (Dashboard)    │
+└──────┬──────────┘
+       │
+       ├── Asset Hub card ──→ Onboarding (if first time) ──→ DigitalAssetHubActivity
+       │                  └─→ DigitalAssetHubActivity (if setup done)
+       ├── Signal Cleaner ──→ SignalNoiseCleanerActivity
+       ├── Re-Sync card ───→ Confirmation dialog → AssetScannerWorker
+       ├── Utility Hub ────→ UtilityHubActivity
+       └── Dev Mode ───────→ FileMoverActivity
+```
+
+## Documentation
+
+See [docs/](docs/) for detailed documentation:
+
+- [Architecture Guide](docs/architecture.md) — Component design and data flow
+- [Features Guide](docs/features.md) — Feature descriptions and user flows
+
+## License
+
+This project is for educational purposes.

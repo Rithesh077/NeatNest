@@ -1,3 +1,173 @@
 <resources>
     <string name="app_name">NeatNest</string>
+    <string name="assets_organized">Assets Organized: %d</string>
+    <string name="signals_cleaned">Signals Cleaned: %d</string>
+
+    <!-- dialogs -->
+    <string name="dialog_yes">Yes</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_delete">Delete</string>
+    <string name="dialog_archive">Archive</string>
+
+    <!-- resync -->
+    <string name="resync_dialog_title">Re-sync files?</string>
+    <string name="resync_dialog_message">Scans for new files and organizes them. This may take a moment.</string>
+    <string name="resync_running">Syncing in progress</string>
+    <string name="resync_success">Sync completed</string>
+    <string name="resync_failed">Scan failed. Check permissions and root folder.</string>
+
+    <!-- asset hub -->
+    <string name="root_path_display">Root: %1$s</string>
+    <string name="no_file_manager">No file manager found</string>
+    <string name="root_not_set">Root directory not set</string>
+    <string name="reset_dialog_title">Reset and start over?</string>
+    <string name="reset_dialog_message">This cancels all background tasks, restores organized files to Downloads, and clears app history.</string>
+    <string name="reset_confirm">Yes, Reset</string>
+    <string name="resetting">Resetting</string>
+    <string name="reset_complete">Reset complete. Returning to setup.</string>
+    <string name="reset_failed">Reset failed. Try again.</string>
+
+    <!-- signal noise cleaner -->
+    <string name="notif_access_dialog_title">Grant notification access?</string>
+    <string name="notif_access_dialog_message">Opens system settings to grant NeatNest access to your notifications for classification.</string>
+    <string name="notif_access_granted">Notification access already granted</string>
+    <string name="notif_status_active">Listener active</string>
+    <string name="notif_status_inactive">Access not granted</string>
+
+    <!-- file mover / menu demo -->
+    <string name="delete_dialog_title">Delete item?</string>
+    <string name="delete_dialog_message">This action cannot be undone.</string>
+    <string name="item_deleted">Item deleted</string>
+    <string name="archive_dialog_title">Archive item?</string>
+    <string name="archive_dialog_message">This item will be archived.</string>
+    <string name="item_archived">Item archived</string>
+    <string name="search_clicked">Search</string>
+    <string name="settings_clicked">Settings</string>
+    <string name="share_clicked">Share</string>
+    <string name="move_clicked">Move</string>
+
+    <!-- onboarding -->
+    <string name="remove_folder_title">Remove folder</string>
+    <string name="remove_folder_message">Remove this folder from the scan list?</string>
+    <string name="remove_confirm">Remove</string>
+    <string name="storage_permission_required">Storage permissions are required to scan files</string>
+    <string name="select_root_required">Select an organization destination first</string>
+
+    <!-- layout strings -->
+    <string name="digital_asset_hub_title">Digital Asset Hub</string>
+    <string name="view_root_folder">View Root Folder</string>
+    <string name="no_root_selected">No root directory selected</string>
+    <string name="no_assets_yet">No processed assets yet. Tap scan to start.</string>
+    <string name="reset_start_over">Reset and Start Over</string>
+    <string name="view_root_desc">View root folder</string>
+    <string name="file_icon_desc">File icon</string>
+    <string name="file_details_desc">File details</string>
+    <string name="notif_icon_desc">Notification icon</string>
+    <string name="scan_new_items_desc">Scan for new items</string>
+    <string name="notif_access_desc">Grant notification access</string>
+    <string name="dashboard_title">NeatNest</string>
+    <string name="system_status">System Status</string>
+    <string name="quick_actions">Quick Actions</string>
+    <string name="recent_files">Recent Files</string>
+    <string name="recent_activity">Recent Activity</string>
+    <string name="no_recent_files">No processed files yet</string>
+    <string name="no_recent_activity">No recent activity</string>
+    <string name="activity_icon_desc">Activity icon</string>
+    <string name="back_desc">Go back</string>
+
+    <!-- recent activity -->
+    <string name="activity_app_launched">App Launched</string>
+    <string name="activity_app_launched_desc">Dashboard opened</string>
+    <string name="activity_file_organized">File Organized</string>
+    <string name="activity_notification_captured">Notification Captured</string>
+    <string name="activity_sync_started">Sync Started</string>
+    <string name="activity_sync_started_desc">Scanning for new files</string>
+    <string name="activity_sync_complete">Sync Complete</string>
+    <string name="activity_sync_complete_desc">All files organized</string>
+
+    <!-- detail dialog -->
+    <string name="activity_detail_desc">Description: </string>
+    <string name="activity_detail_type">Type: </string>
+    <string name="activity_detail_time">Time: </string>
+
+    <!-- main menu section labels -->
+    <string name="section_digital_organizer">Digital Organizer</string>
+    <string name="section_digital_organizer_desc">Organize files and triage notifications</string>
+    <string name="section_utility_hub">Utility Hub</string>
+    <string name="section_utility_hub_desc">Photo, video and document editing tools</string>
+    <string name="section_dev_mode">Dev Mode</string>
+    <string name="section_dev_mode_desc">Analyze device performance, fully offline</string>
+    <string name="coming_soon_header">Coming Soon</string>
+    <string name="more_tools_header">More Tools</string>
+
+    <!-- digital organizer cards -->
+    <string name="enter_asset_hub">Digital Asset Hub</string>
+    <string name="signal_noise_cleaner">Signal Noise Cleaner</string>
+    <string name="asset_hub_action">Asset Hub</string>
+    <string name="signal_cleaner_action">Signal Cleaner</string>
+    <string name="asset_hub_subtitle">Scan and sort files</string>
+    <string name="signal_cleaner_subtitle">Triage notifications</string>
+
+    <!-- utility hub cards -->
+    <string name="file_mover_action">Utility Hub</string>
+    <string name="file_mover_subtitle">Video, files and data tools</string>
+    <string name="resync_action">Re-Sync</string>
+    <string name="resync_subtitle">Scan for new files</string>
+
+    <!-- utility hub screen -->
+    <string name="utility_hub_desc">Manage, convert and extract your files</string>
+    <string name="upcoming_tools_header">Upcoming Tools</string>
+    <string name="video_editor_title">Video Editor</string>
+    <string name="video_editor_subtitle">Trim, compress and convert videos</string>
+    <string name="file_editor_title">File Editor</string>
+    <string name="file_editor_subtitle">Rename, convert and batch process files</string>
+    <string name="data_extractor_title">Data Extractor</string>
+    <string name="data_extractor_subtitle">Extract metadata, audio tracks and frames</string>
+    <string name="price_tracker_title">Price Tracker</string>
+    <string name="price_tracker_subtitle">Compare and track product prices</string>
+    <string name="feature_coming_soon">This feature is in development</string>
+
+    <!-- dev mode card -->
+    <string name="dev_mode_card_title">Device Analyzer</string>
+    <string name="dev_mode_card_subtitle">Menus, fragments and lifecycle tools</string>
+    <string name="coming_soon_badge">Soon</string>
+
+    <!-- status labels -->
+    <string name="assets_label">Assets Organized</string>
+    <string name="signals_label">Signals Cleaned</string>
+
+    <!-- asset hub file info dialog -->
+    <string name="file_info_extension">Extension: %1$s</string>
+    <string name="file_info_original">Original: %1$s</string>
+    <string name="file_info_target">Target: %1$s</string>
+    <string name="file_info_processed">Processed: %1$s</string>
+
+    <!-- notification fallback -->
+    <string name="notif_no_title">No title</string>
+
+    <!-- signal noise cleaner screen -->
+    <string name="signal_noise_title">Signal Noise Cleaner</string>
+    <string name="notif_access_not_granted">Notification access not granted</string>
+    <string name="grant_notif_access">Grant Notification Access</string>
+    <string name="captured_notifications">Captured Notifications</string>
+    <string name="no_notifications_yet">No notifications yet. Grant access to start capturing.</string>
+    <string name="clear_all_noise">Clear All Noise</string>
+    <string name="clear_noise_dialog_title">Clear all notifications?</string>
+    <string name="clear_noise_dialog_message">This will permanently delete all captured notifications. Signals cleaned count will reset to 0.</string>
+    <string name="clear_noise_confirm">Clear All</string>
+    <string name="noise_cleared">All noise cleared</string>
+
+    <!-- file mover / menu demo screen -->
+    <string name="long_press_context">Long press for context menu</string>
+    <string name="show_popup_menu">Show Popup Menu</string>
+
+    <!-- fragment lifecycle -->
+    <string name="lifecycle_log_title">Fragment Lifecycle Log</string>
+
+    <!-- scan pipeline status -->
+    <string name="scan_in_progress">Scanning and organizing files</string>
+    <string name="scan_complete">Scan complete, opening dashboard</string>
+    <string name="scan_failed_continuing">Scan encountered issues, continuing to dashboard</string>
+    <string name="scan_timeout">Scan is taking longer than expected, continuing to dashboard</string>
 </resources>

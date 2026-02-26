@@ -4,40 +4,46 @@ import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
+import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
-import java.io.File
 
+// scans source folders and organizes files into root directory
 class AssetScannerWorker(context: Context, workerParams: WorkerParameters) :
     CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
+        // root write permission is always required
+        if (!PermissionManager.canWriteToRoot(applicationContext)) {
+            Log.e("AssetScannerWorker", "cannot write to root, aborting")
+            return@withContext Result.failure()
+        }
+
         val prefs = applicationContext.getSharedPreferences("NeatNestPrefs", Context.MODE_PRIVATE)
         val rootUriString = prefs.getString("root_uri", null) ?: return@withContext Result.failure()
         val isCompleteScan = prefs.getBoolean("complete_scan_mode", false)
         val isMoveEnabled = prefs.getBoolean("move_files_enabled", false)
-        
+
         val database = AppDatabase.getDatabase(applicationContext)
         val fileDao = database.processedFileDao()
         val folderDao = database.trackedFolderDao()
-        
-        val rootDir = DocumentFile.fromTreeUri(applicationContext, Uri.parse(rootUriString)) ?: return@withContext Result.failure()
+        val rootDir = DocumentFile.fromTreeUri(applicationContext, rootUriString.toUri())
+            ?: return@withContext Result.failure()
 
-        Log.d("AssetScannerWorker", "Starting Pass 1: Ingestion (Move/Copy to Root)")
-
-        if (isCompleteScan) {
-            // Foundational logic: Scan common media collections for "Complete" mode
+        // pass 1: ingest files into root
+        Log.d("AssetScannerWorker", "pass 1: ingestion")
+        if (isCompleteScan && PermissionManager.hasAllFilesAccess() && PermissionManager.hasStorageAccess(applicationContext)) {
             scanAndIngest(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, fileDao, rootDir, isMoveEnabled)
             scanAndIngest(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, fileDao, rootDir, isMoveEnabled)
+            scanAndIngest(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, fileDao, rootDir, isMoveEnabled)
         } else {
-            // Scan only user-selected tracked folders
             val trackedFolders = folderDao.getAllTrackedFolders().first()
             for (folder in trackedFolders) {
-                val sourceDir = DocumentFile.fromTreeUri(applicationContext, Uri.parse(folder.uri))
+                val sourceDir = DocumentFile.fromTreeUri(applicationContext, folder.uri.toUri())
                 sourceDir?.listFiles()?.forEach { file ->
                     if (file.isFile && !fileDao.isFileProcessed(file.uri.toString())) {
                         ingestFile(file, rootDir, fileDao, isMoveEnabled)
@@ -46,68 +52,89 @@ class AssetScannerWorker(context: Context, workerParams: WorkerParameters) :
             }
         }
 
-        Log.d("AssetScannerWorker", "Starting Pass 2: Classification (Sorting inside Root)")
-        classifyFilesInsideRoot(rootDir)
+        // pass 2: classify files into subdirectories by type and extension
+        Log.d("AssetScannerWorker", "pass 2: classification")
+        classifyFilesInsideRoot(rootDir, fileDao)
 
-        Result.success()
+        return@withContext Result.success()
     }
 
     private suspend fun scanAndIngest(collection: Uri, dao: ProcessedFileDao, rootDir: DocumentFile, isMove: Boolean) {
-        val projection = arrayOf(MediaStore.MediaColumns._ID, MediaStore.MediaColumns.DISPLAY_NAME)
+        val projection = arrayOf(MediaStore.MediaColumns._ID, MediaStore.MediaColumns.MIME_TYPE)
         applicationContext.contentResolver.query(collection, projection, null, null, null)?.use { cursor ->
             val idCol = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
-            val nameCol = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME)
+            val mimeTypeCol = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE)
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(idCol)
-                val name = cursor.getString(nameCol)
+                val mimeType = cursor.getString(mimeTypeCol)
                 val uri = Uri.withAppendedPath(collection, id.toString())
-                
                 if (!dao.isFileProcessed(uri.toString())) {
                     val sourceFile = DocumentFile.fromSingleUri(applicationContext, uri)
-                    sourceFile?.let { ingestFile(it, rootDir, dao, isMove) }
+                    sourceFile?.let { ingestFile(it, rootDir, dao, isMove, mimeType) }
                 }
             }
         }
     }
 
-    private suspend fun ingestFile(sourceFile: DocumentFile, rootDir: DocumentFile, dao: ProcessedFileDao, isMove: Boolean) {
+    private suspend fun ingestFile(sourceFile: DocumentFile, rootDir: DocumentFile, dao: ProcessedFileDao, isMove: Boolean, mimeType: String? = null) {
         val fileName = sourceFile.name ?: "unknown_${System.currentTimeMillis()}"
-        
-        // Check for duplicates in Root before moving
         if (rootDir.findFile(fileName) == null) {
-            val success = FileMover.copyFileToDirectory(applicationContext, sourceFile.uri, rootDir, fileName)
-            if (success) {
+            val targetFile = FileMover.copyFileToDirectory(applicationContext, sourceFile.uri, rootDir, fileName, mimeType ?: sourceFile.type)
+            if (targetFile != null) {
                 if (isMove) {
-                    try {
-                        sourceFile.delete() 
-                    } catch (e: Exception) {
-                        Log.e("AssetScannerWorker", "Delete failed for ${sourceFile.name}, app will keep the copy.")
-                    }
+                    try { sourceFile.delete() }
+                    catch (e: Exception) { Log.e("AssetScannerWorker", "source delete failed (move mode): ${sourceFile.name}", e) }
                 }
-                dao.insertProcessedFile(ProcessedFile(sourceFile.uri.toString(), fileName, rootDir.uri.toString(), ""))
+                val ext = fileName.substringAfterLast('.', "")
+                dao.insertProcessedFile(ProcessedFile(sourceFile.uri.toString(), fileName, targetFile.uri.toString(), ext))
             }
         }
     }
 
-    private fun classifyFilesInsideRoot(rootDir: DocumentFile) {
+    // classifies files inside root into subdirectories using DigitalAssetHub for smart
+    // categorization, then by extension. updates DB paths after each successful move.
+    private suspend fun classifyFilesInsideRoot(rootDir: DocumentFile, dao: ProcessedFileDao) {
         rootDir.listFiles().forEach { file ->
             if (file.isFile) {
                 val fileName = file.name ?: return@forEach
-                val extension = fileName.substringAfterLast('.', "").lowercase()
-                if (extension.isNotEmpty()) {
-                    var targetSubDir = rootDir.findFile(extension)
-                    if (targetSubDir == null || !targetSubDir.isDirectory) {
-                        targetSubDir = rootDir.createDirectory(extension)
-                    }
-                    
-                    targetSubDir?.let { subDir ->
-                        // Check if file already exists in extension folder to prevent duplicates
-                        if (subDir.findFile(fileName) == null) {
-                            FileMover.copyFileToDirectory(applicationContext, file.uri, subDir, fileName)
-                            file.delete() // Cleanup from Root after sorting into subfolder
+                val mimeType = file.type
+                val ext = fileName.substringAfterLast('.', "").lowercase()
+                if (ext.isEmpty()) return@forEach
+
+                // use DigitalAssetHub to determine the top-level category
+                val assetType = DigitalAssetHub.classifyByName(fileName)
+                val categoryDir = when (assetType) {
+                    DigitalAssetHub.AssetType.STUDY_MATERIAL -> "Study Material"
+                    DigitalAssetHub.AssetType.DIGITAL_CLUTTER -> "Clutter"
+                    DigitalAssetHub.AssetType.UNCATEGORIZED -> ext
+                }
+
+                // find or create the target subdirectory
+                var subDir = rootDir.findFile(categoryDir)
+                if (subDir == null || !subDir.isDirectory) {
+                    subDir = rootDir.createDirectory(categoryDir)
+                }
+
+                subDir?.let { dir ->
+                    if (dir.findFile(fileName) == null) {
+                        val copiedFile = FileMover.copyFileToDirectory(applicationContext, file.uri, dir, fileName, mimeType)
+                        if (copiedFile != null) {
+                            // update the DB record so targetPath stays accurate
+                            val oldPath = file.uri.toString()
+                            val newPath = copiedFile.uri.toString()
+                            try {
+                                dao.updateTargetPath(oldPath, newPath)
+                            } catch (e: Exception) {
+                                Log.e("AssetScannerWorker", "DB path update failed: $fileName", e)
+                            }
+                            // only delete the original after confirmed successful copy and DB update
+                            file.delete()
                         } else {
-                            file.delete() // It's a duplicate, remove from Root
+                            Log.e("AssetScannerWorker", "copy to subdirectory failed, keeping original: $fileName")
                         }
+                    } else {
+                        // file already exists in subdirectory, safe to remove the root copy
+                        file.delete()
                     }
                 }
             }
