@@ -2,4 +2,26 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- primary palette -->
+    <color name="colorPrimary">#1B5E20</color>
+    <color name="colorPrimaryDark">#003300</color>
+    <color name="colorAccent">#66BB6A</color>
+    <color name="colorSurface">#F6F8F5</color>
+    <color name="colorOnSurface">#1C1C1E</color>
+
+    <!-- section accent colors -->
+    <color name="organizer_tint">#2E7D32</color>
+    <color name="utility_tint">#1565C0</color>
+    <color name="devmode_tint">#6A1B9A</color>
+
+    <!-- neutral -->
+    <color name="text_secondary">#5F6368</color>
+    <color name="divider">#E0E0E0</color>
+    <color name="card_stroke">#1A000000</color>
+    <color name="badge_bg">#E8EAF6</color>
+    <color name="badge_text">#3949AB</color>
+    <color name="priority_high">#C62828</color>
+    <color name="priority_normal">#2E7D32</color>
+    <color name="priority_low">#F9A825</color>
 </resources>

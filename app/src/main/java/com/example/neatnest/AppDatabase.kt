@@ -1,32 +1,4 @@
 package com.example.neatnest
 
-import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
-
-@Database(entities = [ProcessedFile::class, ProcessedNotification::class, TrackedFolder::class], version = 3, exportSchema = false)
-abstract class AppDatabase : RoomDatabase() {
-    abstract fun processedFileDao(): ProcessedFileDao
-    abstract fun processedNotificationDao(): ProcessedNotificationDao
-    abstract fun trackedFolderDao(): TrackedFolderDao
-
-    companion object {
-        @Volatile
-        private var INSTANCE: AppDatabase? = null
-
-        fun getDatabase(context: Context): AppDatabase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    AppDatabase::class.java,
-                    "neatnest_database"
-                )
-                .fallbackToDestructiveMigration()
-                .build()
-                INSTANCE = instance
-                instance
-            }
-        }
-    }
-}
+// canonical database lives in data.local — this typealias keeps existing code compiling
+typealias AppDatabase = com.example.neatnest.data.local.AppDatabase

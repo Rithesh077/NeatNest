@@ -75,13 +75,21 @@
             android:visibility="gone"
             android:layout_marginBottom="8dp"/>
 
-        <TextView
-            android:id="@+id/tvPickedFolders"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvTrackedFolders"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="No source folders selected"
-            android:textSize="12sp"
             android:visibility="gone"
+            android:layout_marginBottom="16dp"/>
+        
+        <TextView
+            android:id="@+id/tvNoFoldersSelected"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No folders selected"
+            android:gravity="center"
+            android:visibility="gone"
+            android:textSize="12sp"
             android:layout_marginBottom="16dp"/>
 
         <View
@@ -127,7 +135,7 @@
             android:id="@+id/btnStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Begin Ingestion &amp; Classification"
+            android:text="Begin Onboarding"
             android:padding="16dp"/>
 
         <ProgressBar
