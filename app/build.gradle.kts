@@ -13,7 +13,7 @@ android {
         minSdk = 24
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0"
+        versionName = "2.1.4.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -36,6 +36,9 @@ android {
     }
     buildFeatures {
         viewBinding = true
+    }
+    aaptOptions {
+        noCompress("tflite")
     }
 }
 
@@ -75,6 +78,10 @@ dependencies {
 
     // animations
     implementation(libs.lottie)
+
+    // ml classification (tensorflow lite / litert)
+    implementation(libs.tflite)
+    implementation(libs.tflite.support)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

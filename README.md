@@ -1,59 +1,68 @@
 # NeatNest
 
-NeatNest is an Android file organizer and notification tracker that helps users declutter their digital lives. It automatically scans, categorizes, and organizes files from selected source folders into a structured root directory, while simultaneously capturing and classifying device notifications by importance.
+**Unified Digital Workspace & Intelligence Engine**
+
+NeatNest is an Android application that combines ML-powered file organization, real-time notification analytics, and device tools into a single unified workspace.
+
+**Current Version: 2.1.4.1**
 
 ## Features
 
-### Digital Asset Hub
+### Digital Asset Hub 🟢
 
-- **File Scanning:** Scans user-selected folders (SAF) or the entire device (MediaStore) for images, videos, and audio files.
-- **Smart Classification:** Uses `DigitalAssetHub` to categorize files as Study Material, Clutter, or by extension (jpg, pdf, mp3, etc.).
-- **Move or Copy:** Users choose whether to move files (deleting originals) or copy them safely.
-- **Background Sync:** Optional periodic re-scans every 4 hours via WorkManager.
-- **Reset & Restore:** One-tap reset that restores all organized files back to Downloads and clears app state.
+- **ML-Powered Classification** — Dual-model engine: Naive Bayes (Kotlin) or TFLite neural network
+- **File Scanning** — SAF (pick folders) or MediaStore (device-wide)
+- **Folder Card Browsing** — Category folders with file counts, tap to drill down
+- **Move or Copy** — Delete originals or keep them safely
+- **Re-Sync** — Restore all files to their original locations, reset app state
 
-### Signal Noise Cleaner
+### Signal Noise Cleaner 🩵
 
-- **Notification Capture:** A `NotificationListenerService` intercepts all device notifications in real-time.
-- **Priority Classification:** Automatically classifies notifications as Most Important, Normal, Low, or Least Important.
-- **Clear All Noise:** One-tap button to permanently wipe all captured notifications and reset counts to 0.
+- **Real-time Notification Capture** — NotificationListenerService intercepts all notifications
+- **Priority Classification** — High, Normal, Low priority with analytics
+- **Analytics Dashboard** — Priority breakdown, top 5 apps by notification volume
+- **Bulk Clear** — One-tap to wipe all captured notifications
 
-### Dev Mode
+### Developer Mode 🟣
 
-- **Fragment Lifecycle Viewer:** Live display of Android Fragment lifecycle callbacks.
-- **Menu Demonstrations:** Options Menu (toolbar icons), Context Menu (long-press), and Pop-up Menu with forced icon display.
-- **AlertDialog Showcase:** Confirmation dialogs for delete and archive actions.
+- Toolbar menus, context menus, popup menus, fragment lifecycle, AlertDialogs
+- _Planned replacement: Device Analyser (v2.1.5.1)_
 
-### Utility Hub
+### Utility Hub 🔵
 
-- **Rescan Files:** Trigger a manual file organization scan.
-- **Upcoming Tools:** Placeholders for Video Editor, File Editor, Data Extractor, and Price Tracker.
+- Placeholder tools: Video Editor, File Editor, Data Extractor, Price Tracker
 
 ## Architecture
 
 ```
 com.example.neatnest/
-├── MainActivity.kt              # Dashboard (launcher)
-├── OnboardingActivity.kt        # Folder setup and scan configuration
-├── DigitalAssetHubActivity.kt   # Organized files viewer
-├── SignalNoiseCleanerActivity.kt # Notification viewer
-├── FileMoverActivity.kt         # Dev Mode (menus + fragments)
-├── UtilityHubActivity.kt        # Utility tools
-├── AssetScannerWorker.kt        # Background file scanner (WorkManager)
-├── ResetWorker.kt               # Background reset/restore (WorkManager)
-├── NotificationService.kt       # Notification listener service
-├── FileMover.kt                 # File copy utility
-├── DigitalAssetHub.kt           # Smart file classifier
-├── PermissionManager.kt         # Centralized permission checks
+├── SplashActivity.kt              # Animated splash screen
+├── MainActivity.kt                # Hub launcher (4 nav cards)
+├── OnboardingActivity.kt          # Setup: folders, root, scan mode, ML model
+├── DigitalAssetHubActivity.kt     # Folder cards → file view, re-sync
+├── SignalNoiseCleanerActivity.kt   # Analytics + notification list
+├── FileMoverActivity.kt           # Dev Mode (menus + fragments)
+├── UtilityHubActivity.kt          # Placeholder tools
+├── AssetScannerWorker.kt          # Background scan + classify (WorkManager)
+├── ResetWorker.kt                 # Restore files + reset (WorkManager)
+├── NotificationService.kt         # Notification listener service
+├── FileMover.kt                   # File copy/move utility
+├── DigitalAssetHub.kt             # Legacy file classifier
+├── PermissionManager.kt           # Centralized permission handling
+├── FolderAdapter.kt               # Folder card RecyclerView adapter
+├── ml/
+│   ├── FileClassificationEngine.kt  # ML engine interface + factory
+│   ├── NaiveBayesClassifier.kt      # Pure Kotlin classifier
+│   └── TFLiteClassifier.kt          # TFLite/LiteRT wrapper
 ├── data/
 │   ├── local/
-│   │   ├── AppDatabase.kt       # Room database (singleton)
+│   │   ├── AppDatabase.kt          # Room v5, 3 entities, singleton
 │   │   ├── ProcessedFileDao.kt
 │   │   ├── ProcessedNotificationDao.kt
 │   │   ├── TrackedFolderDao.kt
 │   │   └── NeatNestPreferences.kt
 │   ├── model/
-│   │   ├── ProcessedFile.kt
+│   │   ├── ProcessedFile.kt        # engineUsed + category fields
 │   │   ├── ProcessedNotification.kt
 │   │   ├── TrackedFolder.kt
 │   │   └── RecentActivityItem.kt
@@ -66,69 +75,66 @@ com.example.neatnest/
 │   ├── assethub/AssetHubViewModel.kt
 │   ├── signalcleaner/SignalCleanerViewModel.kt
 │   └── common/UiState.kt
-└── di/AppModule.kt              # Koin dependency injection
+└── di/AppModule.kt                 # Koin DI graph
 ```
 
 ## Tech Stack
 
-| Component       | Technology                                  |
-| --------------- | ------------------------------------------- |
-| Language        | Kotlin                                      |
-| UI              | XML Layouts + Material Design 3             |
-| Database        | Room (SQLite)                               |
-| Background Work | WorkManager                                 |
-| DI              | Koin                                        |
-| Architecture    | MVVM (ViewModel + StateFlow/LiveData)       |
-| File Access     | Storage Access Framework (SAF) + MediaStore |
-| Min SDK         | 24 (Android 7.0)                            |
-| Target SDK      | 36                                          |
+| Component       | Technology                                |
+| --------------- | ----------------------------------------- |
+| Language        | Kotlin                                    |
+| UI              | XML Layouts + Material Design 3           |
+| Database        | Room v5 (SQLite) with explicit migrations |
+| Background Work | WorkManager (CoroutineWorker)             |
+| DI              | Koin 3.x                                  |
+| Architecture    | MVVM (ViewModel + StateFlow)              |
+| File Access     | SAF + MediaStore                          |
+| ML              | Naive Bayes (Kotlin) + TFLite (LiteRT)    |
+| Images          | Coil                                      |
+| Animations      | Lottie + XML animations                   |
+| Min SDK         | 24 (Android 7.0)                          |
+| Target SDK      | 36                                        |
+
+## UI Design System
+
+| Section        | Accent    | Card Tint | Text      |
+| -------------- | --------- | --------- | --------- |
+| Asset Hub      | `#2E7D32` | `#E8F5E9` | `#1B5E20` |
+| Signal Cleaner | `#00897B` | `#E0F2F1` | `#00695C` |
+| Developer Mode | `#7B1FA2` | `#F3E5F5` | `#6A1B9A` |
+| Utility Hub    | `#1976D2` | `#E3F2FD` | `#1565C0` |
+
+Background: `#F0F0F0` • Status bar: `#0F3814` • Nav bar: `#F0F0F0`
 
 ## Permissions
 
 | Permission                           | Purpose                        |
 | ------------------------------------ | ------------------------------ |
 | `READ_EXTERNAL_STORAGE`              | Legacy file access (API < 33)  |
-| `READ_MEDIA_IMAGES`                  | Image scanning (API 33+)       |
-| `READ_MEDIA_VIDEO`                   | Video scanning (API 33+)       |
-| `READ_MEDIA_AUDIO`                   | Audio scanning (API 33+)       |
+| `READ_MEDIA_IMAGES/VIDEO/AUDIO`      | Scoped media access (API 33+)  |
 | `POST_NOTIFICATIONS`                 | Notification display (API 33+) |
 | `BIND_NOTIFICATION_LISTENER_SERVICE` | Capture device notifications   |
 
 ## Building
 
-1. Open the project in Android Studio (Ladybug or later recommended).
-2. Sync Gradle (File → Sync Project with Gradle Files).
-3. Run on a device or emulator (API 24+).
+1. Open in Android Studio Ladybug (2024.2+)
+2. Sync Gradle (File → Sync Project with Gradle Files)
+3. Run on device or emulator (API 24+)
 
-> **Note:** The `kotlinOptions.jvmTarget` is set to `"11"` to match `compileOptions`. If you see JVM target mismatch errors, ensure your JDK version is 11+.
+## Versioning (x.y.z.w)
 
-## App Flow
-
-```
-┌─────────────────┐
-│   MainActivity   │  ← App opens here (Launcher)
-│   (Dashboard)    │
-└──────┬──────────┘
-       │
-       ├── Asset Hub card ──→ Onboarding (if first time) ──→ DigitalAssetHubActivity
-       │                  └─→ DigitalAssetHubActivity (if setup done)
-       ├── Signal Cleaner ──→ SignalNoiseCleanerActivity
-       ├── Re-Sync card ───→ Confirmation dialog → AssetScannerWorker
-       ├── Utility Hub ────→ UtilityHubActivity
-       └── Dev Mode ───────→ FileMoverActivity
-```
-
-## Production Status (Version 1.0.0)
-
-NeatNest is currently in its initial production release (v1.0.0). The core orchestration engine, which includes background file categorization via the Digital Asset Hub, and real-time noise suppression via the Signal Noise Cleaner, is fully stable and operational. Additional tools in the Utility Hub are slated for future releases.
+| Segment | Meaning                                     |
+| ------- | ------------------------------------------- |
+| x       | Version number                              |
+| y       | 1 = Testing, 2 = Production                 |
+| z       | Feature number                              |
+| w       | 1 = Feature testing, 2 = Feature production |
 
 ## Documentation
 
-See [docs/](docs/) for detailed documentation:
-
-- [Architecture Guide](docs/architecture.md) — Component design and data flow
-- [Features Guide — Version 1.0.0](docs/features.md) — Feature descriptions and user flows
-- [Feature Tracking Logs](docs/feature_tracker.md) — Current development and production status of all features
+- [Architecture Guide](docs/architecture.md) — MVVM layers, DB schema, navigation flow
+- [Features Guide](docs/features.md) — Feature descriptions and user flows
+- [Feature Tracker](docs/feature_tracker.md) — Version history and roadmap
 
 ## License
 

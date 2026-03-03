@@ -66,7 +66,8 @@
     <string name="notif_icon_desc">Notification icon</string>
     <string name="scan_new_items_desc">Scan for new items</string>
     <string name="notif_access_desc">Grant notification access</string>
-    <string name="dashboard_title">NeatNest</string>
+    <string name="dashboard_title">NEATNEST</string>
+    <string name="dashboard_subtitle">UNIFIED DIGITAL WORKSPACE \u0026 INTELLIGENCE ENGINE</string>
     <string name="system_status">System Status</string>
     <string name="quick_actions">Quick Actions</string>
     <string name="recent_files">Recent Files</string>
@@ -170,4 +171,10 @@
     <string name="scan_complete">Scan complete, opening dashboard</string>
     <string name="scan_failed_continuing">Scan encountered issues, continuing to dashboard</string>
     <string name="scan_timeout">Scan is taking longer than expected, continuing to dashboard</string>
+
+    <!-- classification model selection -->
+    <string name="classification_model_header">Classification Engine</string>
+    <string name="classification_model_desc">Choose how files are classified into folders during scanning</string>
+    <string name="model_naive_bayes">NeatNest AI (Naive Bayes) — Fast, lightweight, no setup</string>
+    <string name="model_tflite">Advanced AI (TensorFlow Lite) — Higher accuracy, requires model file</string>
 </resources>

@@ -69,3 +69,5 @@ myapplication/
 app/output/
 app/release/
 lint-results*
+
+scripts/

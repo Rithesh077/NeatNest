@@ -1,137 +1,148 @@
 # Features Guide
 
-## Version 1.0.0 Features
+**Current Version: 2.1.4.1**
 
-### 1. Digital Asset Hub
+## 1. Dashboard (Main Screen)
 
-### Overview
+Clean hub launcher on a light grey (#F0F0F0) background with branding header and 4 color-coded navigation cards:
 
-The Digital Asset Hub scans, categorizes, and organizes files from user-selected source folders into a structured root directory. Files are classified using smart keyword matching and file extension analysis.
+- 🟢 **Digital Asset Hub** — File organization with ML classification (green tint)
+- 🩵 **Signal Noise Cleaner** — Notification analytics and management (teal tint)
+- 🟣 **Developer Mode** — Menus, fragments, and dialog demos (purple tint)
+- 🔵 **Utility Hub** — Placeholder tools (blue tint)
 
-### Setup (Onboarding)
-
-1. **Select scan mode:**
-   - **Pick Folders** — Choose specific folders to scan (uses SAF, no extra permissions needed).
-   - **Complete Scan** — Scan all images, videos, and audio on the device (requires MediaStore permissions).
-2. **Select root directory** — Choose where organized files will be stored.
-3. **Move or Copy** — Toggle whether to delete originals after organizing (move) or keep them (copy).
-4. **Optional:** Enable notification capture and background periodic scans.
-
-### Classification Logic
-
-Files are classified by `DigitalAssetHub.classifyByName()`:
-
-| Category        | Keywords / Rules                                       | Target Folder                         |
-| --------------- | ------------------------------------------------------ | ------------------------------------- |
-| Study Material  | lecture, assignment, exam, notes, quiz, textbook, .pdf | `Study Material/`                     |
-| Digital Clutter | meme, whatsapp, temp, junk, screenshot                 | `Clutter/`                            |
-| Uncategorized   | Everything else                                        | `{extension}/` (e.g., `jpg/`, `mp3/`) |
-
-### Re-Sync
-
-Trigger a new scan from the Dashboard (card or FAB). Only unprocessed files are picked up — already-organized files are skipped.
-
-### Reset
-
-From the Digital Asset Hub screen, tap "Reset and Start Over" to:
-
-1. Restore all organized files to `Downloads/NeatNest_Restored/`.
-2. Clear the database and app preferences.
-3. Return to the onboarding setup screen.
+Each card has a 4dp colored accent bar, section icon, and subtitle. Staggered entrance animations on load. Logo fade-in animation.
 
 ---
 
-### 2. Signal Noise Cleaner
+## 2. Splash Screen
 
-### Overview
-
-Captures all device notifications in real-time, classifies them by importance, and displays them in a scrollable list.
-
-### Priority Levels
-
-| Level           | Source                                                    |
-| --------------- | --------------------------------------------------------- |
-| Most Important  | Channel importance HIGH or notification priority HIGH/MAX |
-| Normal          | Channel importance DEFAULT or priority DEFAULT            |
-| Low             | Channel importance LOW                                    |
-| Least Important | Channel importance MIN                                    |
-| Blocked         | Channel importance NONE                                   |
-
-### Clear All Noise
-
-Tap the "Clear All Noise" button → confirm in the dialog → all stored notifications are permanently deleted. The "Signals Cleaned" counter on the dashboard resets to 0 automatically via Flow observation.
-
-### Granting Access
-
-The notification listener must be explicitly enabled in Android system settings. The app provides a button and FAB that navigate directly to the correct settings page.
+Animated splash with NeatNest logo, fade-in effect, and material progress indicator. Auto-navigates to Main Dashboard after 2 seconds.
 
 ---
 
-### 3. Dev Mode
+## 3. Digital Asset Hub
 
-### Overview
+### Onboarding (First Launch)
 
-A demonstration screen showcasing Android UI components: Toolbars, Menus, Fragments, and Dialogs.
+1. **Scan mode** — Pick Folders (SAF) or Complete Scan (MediaStore)
+2. **Root directory** — Where organized files are stored
+3. **Move or Copy** — Delete originals or keep them
+4. **Classification engine** — Naive Bayes (default) or TFLite (advanced)
+5. **Optional** — Enable notification capture and background scans
 
-### Components Demonstrated
+### ML-Powered Classification
 
-| Component              | How to Trigger                                                      |
-| ---------------------- | ------------------------------------------------------------------- |
-| **Options Menu**       | Visible as icons (Search, Settings) in the green toolbar at the top |
-| **Context Menu**       | Long-press the "Long press for context menu" text                   |
-| **Pop-up Menu**        | Tap the "SHOW POPUP MENU" button                                    |
-| **Fragment Lifecycle** | Automatically visible at the bottom — logs callbacks in real-time   |
-| **AlertDialog**        | Tap "Delete" in the context menu or "Archive" in the popup menu     |
+| Category        | Subdirectory      |
+| --------------- | ----------------- |
+| Study Material  | `Study Material/` |
+| Work Documents  | `Work Documents/` |
+| Media           | `Media/`          |
+| Digital Clutter | `Clutter/`        |
+| Uncategorized   | `{extension}/`    |
 
-### Menu Icons
+- Dual engine: **NaiveBayesClassifier** (pure Kotlin, pre-trained word priors) or **TFLiteClassifier** (character-level neural net from `assets/file_classifier.tflite`)
+- Each file records: `engineUsed`, `category`, `originalUri`, `targetPath`
 
-All three menu types include icons defined in `res/drawable/`:
+### Folder Card View
 
-- `ic_search`, `ic_settings` (Options Menu)
-- `ic_delete`, `ic_share` (Context Menu)
-- `ic_archive`, `ic_move` (Pop-up Menu)
+Category folders displayed as green-tinted cards (#E8F5E9) with file counts. Tap to drill down into files within that category. Back button to return to folder view.
 
-The toolbar color uses the app's `colorPrimary` (`#1B5E20`, dark green).
+### File Info
+
+Tap the info button on any file to see: filename, extension, engine used, category, original path, current path.
+
+### Re-Sync (Full Reset)
+
+Restores all files to their original locations (creates directories if they no longer exist), empties root directory, clears all database records and SharedPreferences, and resets to onboarding for a fresh start.
 
 ---
 
-### 4. Utility Hub
+## 4. Signal Noise Cleaner
 
-### Overview
+### Analytics Dashboard
 
-A tools hub with rescan functionality and placeholders for upcoming features.
+Dark teal (#00695C) analytics card showing:
 
-### Active Features
+- Total notification count (white text)
+- High priority count (light red)
+- Normal priority count (light green)
+- Low priority count (light yellow)
+- Top 5 applications by notification volume
 
-- **Rescan Files** — Triggers a manual `AssetScannerWorker` scan with confirmation dialog.
+### Notification List
 
-### Upcoming (Placeholder)
+Teal-tinted cards (#E0F2F1) with app icon, notification title, app package name, and priority badge.
+
+### Actions
+
+- **Grant Access** → System notification listener settings
+- **Clear All Noise** → Delete all captured notifications with confirmation dialog
+
+---
+
+## 5. Developer Mode
+
+Demonstrates Android UI concepts:
+
+- **Toolbar** with options menu (search, settings)
+- **Context menu** on long-press (delete with confirmation dialog, share)
+- **Popup menu** on button click (archive with dialog, move)
+- **Fragment lifecycle** (`LifecycleFragment` with lifecycle callbacks)
+- **AlertDialogs** for delete and archive confirmations
+
+> _Planned replacement: Device Analyser (v2.1.5.1) with real-time monitoring, charts, and reports_
+
+---
+
+## 6. Utility Hub
+
+Placeholder cards for upcoming tools (50% opacity, COMING SOON badges):
 
 - Video Editor
 - File Editor
-- Data Extractor
+- Data Extractor (OCR)
 - Price Tracker
 
 ---
 
-### 5. Dashboard (Main Screen)
+## 7. ML Classification Engine
 
-### System Status
+### Naive Bayes (Default)
 
-Displays two live counters powered by Room `Flow<Int>` queries:
+Pure Kotlin classifier with pre-trained word frequency priors across 4 categories. Uses Laplace smoothing and extension-based fallback. Zero external dependencies.
 
-- **Assets Organized** — Total files in the `processed_files` table.
-- **Signals Cleaned** — Total notifications in the `processed_notifications` table.
+### TFLite (Advanced)
 
-### Recent Activity
+Character-level dense neural network loaded from `assets/file_classifier.tflite`. Trained via Python script:
 
-A RecyclerView showing the latest 5 file organizations and 5 notification captures. Tapping an item opens an AlertDialog with timestamp details.
+```bash
+cd scripts && python train_classifier.py
+```
 
-### Quick Actions
+Falls back to Naive Bayes if model file is missing or inference fails.
 
-- **Asset Hub** card → File organizer
-- **Signal Cleaner** card → Notification viewer
-- **Re-Sync** card → Manual scan
-- **Utility Hub** card → Tools
-- **Dev Mode** card → Menu and fragment demo
-- **FAB** → Quick rescan trigger
+---
+
+## 8. Background Services
+
+### AssetScannerWorker (WorkManager)
+
+Two-pass CoroutineWorker: (1) ingest files from source, (2) classify via ML engine into subdirectories.
+
+### ResetWorker (WorkManager)
+
+Restores files to original locations, empties root, clears DB + prefs, resets onboarding.
+
+### NotificationService (NotificationListenerService)
+
+Real-time notification capture, priority classification (High/Normal/Low), storage in Room database.
+
+---
+
+## Future Scope
+
+- **Device Analyser** (v2.1.5.1) — Real-time RAM, storage, battery, CPU, network monitoring
+- **Content-based classification** — File headers, metadata, EXIF for better accuracy
+- **Offline model training** — Train custom models on user's own data
+- **Utility tools** — Video editor, file editor, OCR extractor, price tracker

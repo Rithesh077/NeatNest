@@ -2,7 +2,9 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="@color/windowBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -10,72 +12,98 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/digital_asset_hub_title"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp"/>
-
-        <Button
-            android:id="@+id/btnViewRoot"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+        <!-- Header -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/view_root_folder"
-            android:layout_marginBottom="8dp"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
 
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@android:drawable/ic_menu_revert"
+                android:contentDescription="@string/back_desc"
+                android:padding="4dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/digital_asset_hub_title"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary" />
+        </LinearLayout>
+
+        <!-- Root path display -->
         <TextView
             android:id="@+id/tvCurrentRoot"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/no_root_selected"
             android:textSize="12sp"
-            android:layout_marginBottom="16dp"/>
+            android:textColor="@color/text_secondary"
+            android:layout_marginBottom="16dp" />
 
-        <TextView
-            android:id="@+id/tvNoAssets"
+        <!-- Folder cards view (default) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvFolders"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/no_assets_yet"
-            android:gravity="center"
-            android:textSize="12sp"
-            android:paddingVertical="24dp"
-            android:visibility="gone"/>
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false" />
 
+        <!-- Files list view (shown when folder is tapped) -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvAssetList"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:visibility="gone" />
 
-        <View
+        <!-- Empty state -->
+        <TextView
+            android:id="@+id/tvNoAssets"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#DDDDDD"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"/>
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="@string/no_assets_yet"
+            android:textSize="14sp"
+            android:textColor="@color/text_secondary"
+            android:gravity="center"
+            android:visibility="gone" />
 
-        <Button
-            android:id="@+id/btnReset"
-            style="@style/Widget.Material3.Button.TonalButton"
+        <!-- Action buttons -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/reset_start_over"
-            app:icon="@android:drawable/ic_dialog_alert" />
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp">
+
+            <Button
+                android:id="@+id/btnViewRoot"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="@string/view_root_folder"
+                android:layout_marginEnd="8dp" />
+
+            <Button
+                android:id="@+id/btnReset"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="Re-Sync"
+                android:textColor="@color/priority_high" />
+        </LinearLayout>
 
     </LinearLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabViewRoot"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:contentDescription="@string/view_root_desc"
-        android:src="@android:drawable/ic_menu_view"
-        app:tint="@android:color/white" />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
-

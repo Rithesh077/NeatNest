@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="4dp"
     android:layout_marginVertical="4dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="2dp">
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="0dp"
+    app:cardBackgroundColor="@color/signal_light">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="12dp">
+        android:padding="16dp">
 
         <ImageView
             android:id="@+id/ivNotifIcon"
@@ -21,6 +23,7 @@
             android:layout_height="36dp"
             android:src="@android:drawable/ic_dialog_email"
             android:contentDescription="@string/notif_icon_desc"
+            app:tint="@color/signal_tint"
             android:layout_marginEnd="12dp" />
 
         <LinearLayout
@@ -35,6 +38,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:textStyle="bold"
+                android:textColor="@color/signal_dark"
                 android:maxLines="1"
                 android:ellipsize="end" />
 
@@ -43,7 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
-                android:textColor="#666666"
+                android:textColor="@color/text_secondary"
                 android:maxLines="1"
                 android:ellipsize="end" />
 
@@ -54,13 +58,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="11sp"
-            android:background="@android:color/holo_blue_light"
-            android:textColor="@android:color/white"
-            android:paddingHorizontal="8dp"
-            android:paddingVertical="2dp" />
+            android:background="@color/signal_dark"
+            android:textColor="@color/white"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="3dp" />
 
     </LinearLayout>
 
-</androidx.cardview.widget.CardView>
-
-
+</com.google.android.material.card.MaterialCardView>

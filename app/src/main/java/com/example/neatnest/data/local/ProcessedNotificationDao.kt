@@ -20,5 +20,19 @@ interface ProcessedNotificationDao {
 
     @Query("DELETE FROM processed_notifications")
     suspend fun deleteAllNotifications()
+
+    // analytics queries
+    @Query("SELECT COUNT(*) FROM processed_notifications WHERE priority = :priority")
+    fun getCountByPriority(priority: String): Flow<Int>
+
+    @Query("SELECT packageName, COUNT(*) as count FROM processed_notifications GROUP BY packageName ORDER BY count DESC LIMIT 5")
+    fun getTopPackages(): Flow<List<PackageCount>>
 }
+
+// helper data class for package count query
+data class PackageCount(
+    val packageName: String,
+    val count: Int
+)
+
 

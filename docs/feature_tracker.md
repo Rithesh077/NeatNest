@@ -1,29 +1,57 @@
 # Feature Tracking Logs
 
-This document tracks the status of all planned and implemented features in NeatNest. Use this as a living document to log development, testing, and production phases.
+## Versioning Scheme: x.y.z.w
 
-## Version 1.0.0 Feature Tracker
+| Segment | Meaning           | Values                      |
+| ------- | ----------------- | --------------------------- |
+| **x**   | Version number    | 1, 2, 3...                  |
+| **y**   | App lifecycle     | 1 = Testing, 2 = Production |
+| **z**   | Feature number    | Sequential feature count    |
+| **w**   | Feature lifecycle | 1 = Testing, 2 = Production |
 
-| Feature Name                                | Detailed Use Case Description                                                                                              | Development Status | Testing Status | Production Status |
-| :------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------- | :----------------- | :------------- | :---------------- |
-| **Asset Scanner (SAF/MediaStore)**          | Users can pick specific folders or scan the entire device to ingest unorganized files into the system.                     | COMPLETED          | VERIFIED       | LIVE_V1_0_0       |
-| **Smart Classification**                    | Files are automatically categorized into Study Material, Digital Clutter, or by extension based on filenames and keywords. | COMPLETED          | VERIFIED       | LIVE_V1_0_0       |
-| **Move / Copy File Handlers**               | Users can choose to safely copy files or move them (which deletes the source file after a successful transfer).            | COMPLETED          | VERIFIED       | LIVE_V1_0_0       |
-| **Background Auto-Sync**                    | A WorkManager periodic job automatically scans for new files in the background every 4 hours.                              | COMPLETED          | VERIFIED       | LIVE_V1_0_0       |
-| **Notification Listener Service**           | Intercepts real-time device notifications and saves them to the Room database.                                             | COMPLETED          | VERIFIED       | LIVE_V1_0_0       |
-| **Signal Priority Classifier**              | Sorts captured notifications into priority tiers (Most Important, Normal, Low, etc.) based on OS channel importance.       | COMPLETED          | VERIFIED       | LIVE_V1_0_0       |
-| **Clear All Noise**                         | Allows the user to permanently delete all captured notification records with a single tap.                                 | COMPLETED          | VERIFIED       | LIVE_V1_0_0       |
-| **Dev Mode (Fragment/UI Demo)**             | A showcase screen for Android Lifecycle Fragment callbacks, Options Menus, Context Menus, and Pop-ups.                     | COMPLETED          | VERIFIED       | LIVE_V1_0_0       |
-| **Dashboard Activity Feed**                 | A scrollable timeline showing recent file organization events and captured signals.                                        | COMPLETED          | VERIFIED       | LIVE_V1_0_0       |
-| **Reset & Restore System**                  | Wipes the app database and transfers all organized files back to their original state in the device's Downloads folder.    | COMPLETED          | VERIFIED       | LIVE_V1_0_0       |
-| **Massive App UI Update**                   | Complete visual and architectural overhaul of the entire application interface for a premium, modern experience.           | PLANNED            | NOT_STARTED    | UNRELEASED        |
-| **Asset Hub Options Menu (Post-UI Update)** | Search functionality and file filtering/sorting from the top toolbar in the Digital Asset Hub.                             | PLANNED            | NOT_STARTED    | UNRELEASED        |
-| **Dashboard Context Menu (Post-UI Update)** | Long-press actions on Dashboard Recent Activity items to "Dismiss from History" or "Pin to Top".                           | PLANNED            | NOT_STARTED    | UNRELEASED        |
-| **Signal Pop-up Menu (Post-UI Update)**     | Individual popup menus per notification in Signal Cleaner to Whitelist apps, Mark as Read, or Delete individually.         | PLANNED            | NOT_STARTED    | UNRELEASED        |
-| **Device Performance & Audit (Dev Mode)**   | A comprehensive scan showing running processes, memory usage, and the overall performance health of the device.            | PLANNED            | NOT_STARTED    | UNRELEASED        |
-| **Report Sender (Dev Mode)**                | Generates a full device audit PDF report and lets the user send it via SMS to a number or email to a specified ID.         | PLANNED            | NOT_STARTED    | UNRELEASED        |
-| **Device Charts & Analytics (Dev Mode)**    | Visual graphs and charts representing device health, storage trends, and battery performance history.                      | PLANNED            | NOT_STARTED    | UNRELEASED        |
-| **Video Editor (Utility Hub)**              | A built-in utility for trimming and editing video files.                                                                   | PLANNED            | NOT_STARTED    | UNRELEASED        |
-| **File Editor (Utility Hub)**               | A text/document editor for modifying files directly within the app.                                                        | PLANNED            | NOT_STARTED    | UNRELEASED        |
-| **Data Extractor (Utility Hub)**            | A tool for extracting data (like text from images or specific fields from documents).                                      | PLANNED            | NOT_STARTED    | UNRELEASED        |
-| **Price Tracker (Utility Hub)**             | A component to track prices of items online or through custom user input.                                                  | PLANNED            | NOT_STARTED    | UNRELEASED        |
+**Current Version: 2.1.4.1**
+(Version 2, App in Testing, Feature 4 — UI Design System, Feature in Testing)
+
+---
+
+## Version History
+
+| Version     | Feature (z)              | Description                                                                                                                                   |
+| ----------- | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.1.1.1     | z=1 Core Engine          | File scanning (SAF + MediaStore), keyword classification, notification capture, reset to Downloads                                            |
+| 2.1.1.2     | z=1 Core Engine          | Core engine tested and stable                                                                                                                 |
+| 2.1.2.1     | z=2 UI Overhaul          | Material 3, animated splash, premium colors, card UI, activity transitions                                                                    |
+| 2.1.2.2     | z=2 UI Overhaul          | UI overhaul tested and stable                                                                                                                 |
+| 2.1.3.1     | z=3 ML + Analytics       | Dual-model ML engine (Naive Bayes + TFLite), folder-card browsing, re-sync to original locations, Signal analytics dashboard, DB v5 migration |
+| 2.1.3.2     | z=3 ML + Analytics       | ML and analytics tested and stable                                                                                                            |
+| **2.1.4.1** | **z=4 UI Design System** | **Section-specific color themes, system bar overlap fix, tinted card backgrounds, text contrast fixes**                                       |
+| 2.1.4.2     | z=4 UI Design System     | _(after testing)_                                                                                                                             |
+| 2.1.5.1     | z=5 Device Analyser      | _(planned)_ Real-time monitoring, charts, PDF reports, historical tracking                                                                    |
+| 2.1.5.2     | z=5 Device Analyser      | _(after testing)_                                                                                                                             |
+| 2.2.5.2     | —                        | App moves to Production after all features tested                                                                                             |
+
+---
+
+## Feature Tracker
+
+| Feature                | z   | Current w   | Version     |
+| ---------------------- | --- | ----------- | ----------- |
+| Core Engine            | 1   | 2 (prod)    | 2.1.1.2     |
+| UI Overhaul            | 2   | 2 (prod)    | 2.1.2.2     |
+| ML + Analytics         | 3   | 2 (prod)    | 2.1.3.2     |
+| UI Design System       | 4   | 1 (testing) | **2.1.4.1** |
+| Device Analyser        | 5   | — (planned) | 2.1.5.1     |
+| Content Classification | 6   | — (planned) | 2.1.6.1     |
+| Video Editor           | 7   | — (planned) | 2.1.7.1     |
+| File Editor            | 8   | — (planned) | 2.1.8.1     |
+| Data Extractor (OCR)   | 9   | — (planned) | 2.1.9.1     |
+| Price Tracker          | 10  | — (planned) | 2.1.10.1    |
+
+---
+
+## Future Scope
+
+- Offline model training with device data
+- Content-aware file classification (file headers, metadata, EXIF)
+- Alert system for high RAM/battery thresholds
+- Advanced trend predictions from historical snapshots

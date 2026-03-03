@@ -18,6 +18,11 @@ class FileRepository(
     suspend fun isProcessed(uri: String) = fileDao.isFileProcessed(uri)
     suspend fun insertFile(file: ProcessedFile) = fileDao.insertProcessedFile(file)
 
+    // category (folder-card) queries
+    fun getDistinctCategories(): Flow<List<String>> = fileDao.getDistinctCategories()
+    fun getCategoryCount(category: String): Flow<Int> = fileDao.getCategoryCount(category)
+    fun getFilesByCategory(category: String): Flow<List<ProcessedFile>> = fileDao.getFilesByCategory(category)
+
     fun getTrackedFolders(): Flow<List<TrackedFolder>> = folderDao.getAllTrackedFolders()
     suspend fun addFolder(folder: TrackedFolder) = folderDao.insertFolder(folder)
     suspend fun removeFolder(folder: TrackedFolder) = folderDao.removeFolder(folder)

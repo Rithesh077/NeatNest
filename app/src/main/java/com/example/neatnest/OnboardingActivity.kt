@@ -43,6 +43,7 @@ class OnboardingActivity : AppCompatActivity() {
     private lateinit var switchBackground: SwitchCompat
     private lateinit var switchMoveFiles: SwitchCompat
     private lateinit var rgScanMode: RadioGroup
+    private lateinit var rgClassificationModel: RadioGroup
     private lateinit var btnPickSource: Button
     private lateinit var btnSelectRoot: Button
     private lateinit var btnStart: Button
@@ -116,6 +117,7 @@ class OnboardingActivity : AppCompatActivity() {
         tvRootPath = findViewById(R.id.tvRootPath)
         progressBar = findViewById(R.id.progressBar)
         tvStatus = findViewById(R.id.tvStatus)
+        rgClassificationModel = findViewById(R.id.rgClassificationModel)
     }
 
     private fun setupRecyclerView() {
@@ -203,6 +205,14 @@ class OnboardingActivity : AppCompatActivity() {
 
         viewModel.setMoveFilesEnabled(switchMoveFiles.isChecked)
         viewModel.setCompleteScanMode(rgScanMode.checkedRadioButtonId == R.id.rbCompleteScan)
+
+        // persist classification model selection
+        val selectedModel = if (rgClassificationModel.checkedRadioButtonId == R.id.rbTFLite) "tflite" else "naive_bayes"
+        getSharedPreferences("NeatNestPrefs", MODE_PRIVATE)
+            .edit()
+            .putString("classification_model", selectedModel)
+            .apply()
+
         viewModel.completeOnboarding()
 
         // request permissions before starting pipeline
@@ -290,7 +300,13 @@ class OnboardingActivity : AppCompatActivity() {
         if (!isFinishing && !hasNavigated) {
             hasNavigated = true
             startActivity(Intent(this, DigitalAssetHubActivity::class.java))
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
             finish()
         }
+    }
+
+    override fun finish() {
+        super.finish()
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 }

@@ -3,19 +3,21 @@ package com.example.neatnest
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.neatnest.ui.common.UiState
 import com.example.neatnest.ui.signalcleaner.SignalCleanerViewModel
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -33,7 +35,17 @@ class SignalNoiseCleanerActivity : AppCompatActivity() {
         val tvNotifStatus = findViewById<TextView>(R.id.tvNotifStatus)
         val tvNoNotifications = findViewById<TextView>(R.id.tvNoNotifications)
         val rvNotifications = findViewById<RecyclerView>(R.id.rvNotifications)
-        val fabNotifAccess = findViewById<FloatingActionButton>(R.id.fabNotifAccess)
+
+        // analytics views
+        val cardAnalytics = findViewById<MaterialCardView>(R.id.cardAnalytics)
+        val tvTotalCount = findViewById<TextView>(R.id.tvTotalCount)
+        val tvHighCount = findViewById<TextView>(R.id.tvHighCount)
+        val tvNormalCount = findViewById<TextView>(R.id.tvNormalCount)
+        val tvLowCount = findViewById<TextView>(R.id.tvLowCount)
+        val tvTopApps = findViewById<TextView>(R.id.tvTopApps)
+
+        // entrance animations
+        cardAnalytics.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_scale_in))
 
         // recyclerview for notifications
         notificationsAdapter = NotificationsAdapter()
@@ -43,7 +55,7 @@ class SignalNoiseCleanerActivity : AppCompatActivity() {
         // update status text
         updateNotifStatus(tvNotifStatus)
 
-        // observe ui state from viewmodel
+        // observe notification list
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
@@ -73,9 +85,34 @@ class SignalNoiseCleanerActivity : AppCompatActivity() {
             }
         }
 
+        // observe analytics
+        viewModel.notificationCount.asLiveData().observe(this) { count ->
+            tvTotalCount.text = count.toString()
+        }
+        viewModel.highCount.asLiveData().observe(this) { count ->
+            tvHighCount.text = count.toString()
+        }
+        viewModel.normalCount.asLiveData().observe(this) { count ->
+            tvNormalCount.text = count.toString()
+        }
+        viewModel.lowCount.asLiveData().observe(this) { count ->
+            tvLowCount.text = count.toString()
+        }
+        viewModel.topPackages.asLiveData().observe(this) { packages ->
+            if (packages.isNotEmpty()) {
+                tvTopApps.visibility = View.VISIBLE
+                val topAppsText = packages.joinToString(" • ") { pkg ->
+                    val appName = pkg.packageName.substringAfterLast('.')
+                    "$appName (${pkg.count})"
+                }
+                tvTopApps.text = "Top apps: $topAppsText"
+            } else {
+                tvTopApps.visibility = View.GONE
+            }
+        }
+
         btnAccess.setOnClickListener { handleNotificationAccess() }
         btnClearNoise.setOnClickListener { showClearNoiseDialog() }
-        fabNotifAccess.setOnClickListener { handleNotificationAccess() }
     }
 
     override fun onResume() {
@@ -119,5 +156,10 @@ class SignalNoiseCleanerActivity : AppCompatActivity() {
             tvNotifStatus.text = getString(R.string.notif_status_inactive)
             tvNotifStatus.setTextColor(getColor(android.R.color.holo_red_dark))
         }
+    }
+
+    override fun finish() {
+        super.finish()
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 }
