@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-// drives the Signal Noise Cleaner screen
+// drives the signal noise cleaner screen
 class SignalCleanerViewModel(
     private val notificationRepository: NotificationRepository
 ) : ViewModel() {

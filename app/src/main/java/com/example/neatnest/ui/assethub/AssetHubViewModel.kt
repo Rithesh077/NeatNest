@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-// drives the Digital Asset Hub screen
+// drives the digital asset hub screen
 class AssetHubViewModel(
     private val fileRepository: FileRepository,
     private val prefs: NeatNestPreferences

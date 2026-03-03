@@ -22,7 +22,7 @@ class DashboardViewModel(
     val fileCount = fileRepository.getFileCount()
     val notificationCount = notificationRepository.getCount()
 
-    // dedup key -> activity item, preserves insertion order
+    // dedup key to activity item, preserves insertion order
     private val activityMap = LinkedHashMap<String, RecentActivityItem>()
 
     private val _activityList = MutableStateFlow<List<RecentActivityItem>>(emptyList())

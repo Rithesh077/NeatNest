@@ -38,12 +38,12 @@ class ResetWorker(context: Context, workerParams: WorkerParameters) :
             val rootDir = rootUriString?.let { DocumentFile.fromTreeUri(applicationContext, it.toUri()) }
 
             // scan the actual root directory tree for real files instead of relying on
-            // potentially stale DB paths. this ensures we find files even after reclassification.
+            // potentially stale db paths. this ensures we find files even after reclassification.
             if (rootDir != null && rootDir.exists()) {
                 restoreAllFilesFromDirectory(rootDir)
             } else {
-                // fallback: try DB paths in case root dir itself is inaccessible
-                Log.w("ResetWorker", "root dir not accessible, trying DB paths as fallback")
+                // fallback: try db paths in case root dir itself is inaccessible
+                Log.w("ResetWorker", "root dir not accessible, trying db paths as fallback")
                 val allFiles = database.processedFileDao().getAllProcessedFiles().first()
                 allFiles.forEach { file ->
                     try {

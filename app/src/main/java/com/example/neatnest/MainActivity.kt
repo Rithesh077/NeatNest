@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // digital organizer — needs onboarding (folder setup) first
+        // digital organizer needs onboarding (folder setup) first
         cardAssetHub.setOnClickListener {
             if (viewModel.isOnboardingCompleted()) {
                 startActivity(Intent(this, DigitalAssetHubActivity::class.java))
@@ -91,12 +91,12 @@ class MainActivity : AppCompatActivity() {
             showResyncDialog(workManager)
         }
 
-        // utility hub - navigates to the utility hub screen
+        // utility hub navigates to the utility hub screen
         cardUtilityHub.setOnClickListener {
             startActivity(Intent(this, UtilityHubActivity::class.java))
         }
 
-        // dev mode - launches the menu and lifecycle demo
+        // dev mode launches the menu and lifecycle demo
         cardDevMode.setOnClickListener {
             startActivity(Intent(this, FileMoverActivity::class.java))
         }

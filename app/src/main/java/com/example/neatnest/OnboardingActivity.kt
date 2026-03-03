@@ -212,14 +212,14 @@ class OnboardingActivity : AppCompatActivity() {
     private fun requestStoragePermissions() {
         val isCompleteScan = rgScanMode.checkedRadioButtonId == R.id.rbCompleteScan
 
-        // pick-folders mode uses SAF document tree URIs which already grant access
-        // — no MediaStore permissions needed, go straight to the pipeline
+        // pick-folders mode uses saf document tree uris which already grant access
+        // no mediastore permissions needed, go straight to the pipeline
         if (!isCompleteScan) {
             startPipeline()
             return
         }
 
-        // complete scan mode needs MediaStore permissions to query all device media
+        // complete scan mode needs mediastore permissions to query all device media
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val needed = arrayOf(
                 Manifest.permission.READ_MEDIA_IMAGES,

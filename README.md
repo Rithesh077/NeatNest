@@ -118,12 +118,17 @@ com.example.neatnest/
        └── Dev Mode ───────→ FileMoverActivity
 ```
 
+## Production Status (Version 1.0.0)
+
+NeatNest is currently in its initial production release (v1.0.0). The core orchestration engine, which includes background file categorization via the Digital Asset Hub, and real-time noise suppression via the Signal Noise Cleaner, is fully stable and operational. Additional tools in the Utility Hub are slated for future releases.
+
 ## Documentation
 
 See [docs/](docs/) for detailed documentation:
 
 - [Architecture Guide](docs/architecture.md) — Component design and data flow
-- [Features Guide](docs/features.md) — Feature descriptions and user flows
+- [Features Guide — Version 1.0.0](docs/features.md) — Feature descriptions and user flows
+- [Feature Tracking Logs](docs/feature_tracker.md) — Current development and production status of all features
 
 ## License
 
