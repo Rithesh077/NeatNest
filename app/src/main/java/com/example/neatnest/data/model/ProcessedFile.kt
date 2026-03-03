@@ -10,6 +10,8 @@ data class ProcessedFile(
     val fileName: String,
     val targetPath: String,
     val extension: String,
-    val timestamp: Long = System.currentTimeMillis()
+    val timestamp: Long = System.currentTimeMillis(),
+    val engineUsed: String = "legacy",
+    val category: String = ""
 )
 

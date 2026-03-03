@@ -1,5 +1,6 @@
 package com.example.neatnest.data.repository
 
+import com.example.neatnest.data.local.PackageCount
 import com.example.neatnest.data.local.ProcessedNotificationDao
 import com.example.neatnest.data.model.ProcessedNotification
 import kotlinx.coroutines.flow.Flow
@@ -10,5 +11,9 @@ class NotificationRepository(private val dao: ProcessedNotificationDao) {
     fun getCount(): Flow<Int> = dao.getNotificationCount()
     suspend fun insert(notification: ProcessedNotification) = dao.insertNotification(notification)
     suspend fun deleteAll() = dao.deleteAllNotifications()
+
+    // analytics
+    fun getCountByPriority(priority: String): Flow<Int> = dao.getCountByPriority(priority)
+    fun getTopPackages(): Flow<List<PackageCount>> = dao.getTopPackages()
 }
 

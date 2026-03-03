@@ -2,82 +2,226 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="@color/windowBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="16dp">
 
+        <!-- Header -->
         <TextView
-            android:text="@string/signal_noise_title"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="8dp"/>
+            android:text="@string/signal_noise_title"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:layout_marginBottom="4dp" />
 
+        <!-- Status -->
         <TextView
             android:id="@+id/tvNotifStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/notif_access_not_granted"
-            android:textSize="12sp"
-            android:textColor="#999999"
-            android:paddingBottom="16dp"/>
+            android:textSize="13sp"
+            android:layout_marginBottom="12dp" />
 
-        <Button
-            android:id="@+id/btnShareImportant"
-            android:text="@string/grant_notif_access"
+        <!-- Analytics Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardAnalytics"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="@color/signal_dark">
 
-        <Button
-            android:id="@+id/btnClearNoise"
-            android:text="@string/clear_all_noise"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/priority_high"
-            android:layout_marginBottom="16dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Analytics"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Priority breakdown -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="8dp">
+
+                    <!-- Total -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+                        <TextView
+                            android:id="@+id/tvTotalCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/white" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total"
+                            android:textSize="11sp"
+                            android:textColor="#B0FFFFFF" />
+                    </LinearLayout>
+
+                    <!-- High -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+                        <TextView
+                            android:id="@+id/tvHighCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:textColor="#FF8A80" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="High"
+                            android:textSize="11sp"
+                            android:textColor="#B0FFFFFF" />
+                    </LinearLayout>
+
+                    <!-- Normal -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+                        <TextView
+                            android:id="@+id/tvNormalCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:textColor="#B9F6CA" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Normal"
+                            android:textSize="11sp"
+                            android:textColor="#B0FFFFFF" />
+                    </LinearLayout>
+
+                    <!-- Low -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+                        <TextView
+                            android:id="@+id/tvLowCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:textColor="#FFF59D" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Low"
+                            android:textSize="11sp"
+                            android:textColor="#B0FFFFFF" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Top apps -->
+                <TextView
+                    android:id="@+id/tvTopApps"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="#B0FFFFFF"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Section header -->
         <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="@string/captured_notifications"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:textStyle="bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"/>
+            android:textColor="@color/text_primary"
+            android:layout_marginBottom="8dp" />
 
-        <TextView
-            android:id="@+id/tvNoNotifications"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/no_notifications_yet"
-            android:gravity="center"
-            android:textSize="12sp"
-            android:paddingVertical="24dp"
-            android:visibility="gone"/>
-
+        <!-- Notifications list -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvNotifications"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:clipToPadding="false" />
+
+        <!-- Empty state -->
+        <TextView
+            android:id="@+id/tvNoNotifications"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="@string/no_notifications_yet"
+            android:textSize="14sp"
+            android:textColor="@color/text_secondary"
+            android:gravity="center"
+            android:visibility="gone" />
+
+        <!-- Action buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp">
+
+            <Button
+                android:id="@+id/btnShareImportant"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="@string/grant_notif_access"
+                android:layout_marginEnd="8dp" />
+
+            <Button
+                android:id="@+id/btnClearNoise"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="@string/clear_all_noise"
+                android:textColor="@color/priority_high" />
+        </LinearLayout>
 
     </LinearLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabNotifAccess"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:contentDescription="@string/notif_access_desc"
-        android:src="@android:drawable/ic_lock_lock"
-        app:tint="@android:color/white" />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
-

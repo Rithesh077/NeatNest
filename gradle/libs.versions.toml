@@ -19,6 +19,8 @@ koin = "3.5.6"
 splashscreen = "1.0.1"
 coil = "2.6.0"
 lottie = "6.4.0"
+tflite = "2.14.0"
+tfliteSupport = "0.4.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -43,6 +45,8 @@ androidx-splashscreen = { group = "androidx.core", name = "core-splashscreen", v
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 coil = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
 lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
+tflite = { group = "org.tensorflow", name = "tensorflow-lite", version.ref = "tflite" }
+tflite-support = { group = "org.tensorflow", name = "tensorflow-lite-support", version.ref = "tfliteSupport" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -26,5 +26,23 @@ interface ProcessedFileDao {
 
     @Query("SELECT * FROM processed_files WHERE targetPath = :path LIMIT 1")
     suspend fun getFileByTargetPath(path: String): ProcessedFile?
+
+    // folder-card queries
+    @Query("SELECT DISTINCT category FROM processed_files WHERE category != '' ORDER BY category")
+    fun getDistinctCategories(): Flow<List<String>>
+
+    @Query("SELECT COUNT(*) FROM processed_files WHERE category = :category")
+    fun getCategoryCount(category: String): Flow<Int>
+
+    @Query("SELECT * FROM processed_files WHERE category = :category ORDER BY timestamp DESC")
+    fun getFilesByCategory(category: String): Flow<List<ProcessedFile>>
+
+    // for re-sync: get all files as a snapshot
+    @Query("SELECT * FROM processed_files")
+    suspend fun getAllProcessedFilesSnapshot(): List<ProcessedFile>
+
+    @Query("DELETE FROM processed_files")
+    suspend fun deleteAll()
 }
+
 

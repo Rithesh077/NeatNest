@@ -1,10 +1,6 @@
 package com.example.neatnest
 
-import android.content.ContentValues
 import android.content.Context
-import android.os.Build
-import android.os.Environment
-import android.provider.MediaStore
 import android.util.Log
 import androidx.core.content.edit
 import androidx.core.net.toUri
@@ -13,15 +9,14 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 
-// reverses the organization pipeline and restores files
+// restores classified files to original locations, empties root, resets onboarding
 class ResetWorker(context: Context, workerParams: WorkerParameters) :
     CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
-        Log.d("ResetWorker", "starting reset")
+        Log.d("ResetWorker", "starting re-sync")
 
         // step 1: verify permissions
         if (!PermissionManager.canWriteToRoot(applicationContext)) {
@@ -31,67 +26,96 @@ class ResetWorker(context: Context, workerParams: WorkerParameters) :
 
         val database = AppDatabase.getDatabase(applicationContext)
         val prefs = applicationContext.getSharedPreferences("NeatNestPrefs", Context.MODE_PRIVATE)
+        val resolver = applicationContext.contentResolver
 
-        // step 2: restore files to downloads
+        // step 2: restore files to original locations using DB records
         try {
-            val rootUriString = prefs.getString("root_uri", null)
-            val rootDir = rootUriString?.let { DocumentFile.fromTreeUri(applicationContext, it.toUri()) }
+            val allFiles = database.processedFileDao().getAllProcessedFilesSnapshot()
+            Log.d("ResetWorker", "restoring ${allFiles.size} files to original locations")
 
-            // scan the actual root directory tree for real files instead of relying on
-            // potentially stale db paths. this ensures we find files even after reclassification.
-            if (rootDir != null && rootDir.exists()) {
-                restoreAllFilesFromDirectory(rootDir)
-            } else {
-                // fallback: try db paths in case root dir itself is inaccessible
-                Log.w("ResetWorker", "root dir not accessible, trying db paths as fallback")
-                val allFiles = database.processedFileDao().getAllProcessedFiles().first()
-                allFiles.forEach { file ->
-                    try {
-                        val sourceUri = file.targetPath.toUri()
-                        val sourceFile = DocumentFile.fromSingleUri(applicationContext, sourceUri)
-                        if (sourceFile?.exists() == true) {
-                            restoreFileToDownloads(sourceFile, file.fileName)
-                        }
-                    } catch (e: Exception) {
-                        Log.e("ResetWorker", "restore failed: ${file.fileName}", e)
+            allFiles.forEach { file ->
+                try {
+                    val targetUri = file.targetPath.toUri()
+                    val sourceDoc = DocumentFile.fromSingleUri(applicationContext, targetUri)
+
+                    if (sourceDoc?.exists() != true) {
+                        Log.w("ResetWorker", "classified file not found, skipping: ${file.fileName}")
+                        return@forEach
                     }
+
+                    val originalUri = file.originalUri.toUri()
+
+                    // try to restore to original location
+                    // for SAF tree URIs, we need to find/create the parent directory
+                    val originalParent = try {
+                        val parentUri = originalUri.buildUpon()
+                            .path(originalUri.path?.substringBeforeLast('/'))
+                            .build()
+                        DocumentFile.fromTreeUri(applicationContext, parentUri)
+                    } catch (e: Exception) {
+                        null
+                    }
+
+                    if (originalParent?.exists() == true) {
+                        // restore to original location
+                        val restoredFile = FileMover.copyFileToDirectory(
+                            applicationContext, sourceDoc.uri, originalParent, file.fileName, null
+                        )
+                        if (restoredFile != null) {
+                            sourceDoc.delete()
+                            Log.d("ResetWorker", "restored to original: ${file.fileName}")
+                        } else {
+                            Log.e("ResetWorker", "copy back failed: ${file.fileName}")
+                        }
+                    } else {
+                        // original directory doesn't exist or not accessible
+                        // create it via the root directory if possible
+                        Log.w("ResetWorker", "original dir not accessible for: ${file.fileName}, restoring via root")
+                        val rootUriString = prefs.getString("root_uri", null)
+                        val rootDir = rootUriString?.let {
+                            DocumentFile.fromTreeUri(applicationContext, it.toUri())
+                        }
+                        if (rootDir != null) {
+                            var restoredDir = rootDir.findFile("Restored")
+                            if (restoredDir == null || !restoredDir.isDirectory) {
+                                restoredDir = rootDir.createDirectory("Restored")
+                            }
+                            restoredDir?.let { dir ->
+                                val restoredFile = FileMover.copyFileToDirectory(
+                                    applicationContext, sourceDoc.uri, dir, file.fileName, null
+                                )
+                                if (restoredFile != null) {
+                                    sourceDoc.delete()
+                                    Log.d("ResetWorker", "restored to Restored folder: ${file.fileName}")
+                                }
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e("ResetWorker", "restore failed: ${file.fileName}", e)
                 }
             }
 
-            // delete root directory contents after restoration
+            // step 3: empty root directory (delete all subdirectories and files, keep root itself)
+            val rootUriString = prefs.getString("root_uri", null)
+            val rootDir = rootUriString?.let { DocumentFile.fromTreeUri(applicationContext, it.toUri()) }
             if (rootDir != null && rootDir.exists()) {
                 deleteDirectoryContents(rootDir)
-                // don't delete root itself since the user selected it as their root
+                Log.d("ResetWorker", "root directory emptied")
             }
         } catch (e: Exception) {
             Log.e("ResetWorker", "critical error during restoration", e)
             return@withContext Result.failure()
         }
 
-        // step 3: clear app state
+        // step 4: clear all app state and reset onboarding
         Log.d("ResetWorker", "wiping app state")
         WorkManager.getInstance(applicationContext).cancelAllWorkByTag("periodic_scan")
         database.clearAllTables()
         prefs.edit { clear() }
 
-        Log.d("ResetWorker", "reset complete")
+        Log.d("ResetWorker", "re-sync complete — onboarding reset")
         return@withContext Result.success()
-    }
-
-    // recursively walks the root directory tree and restores every file it finds
-    private fun restoreAllFilesFromDirectory(directory: DocumentFile) {
-        directory.listFiles().forEach { file ->
-            if (file.isDirectory) {
-                restoreAllFilesFromDirectory(file)
-            } else if (file.isFile) {
-                val fileName = file.name ?: "restored_${System.currentTimeMillis()}"
-                try {
-                    restoreFileToDownloads(file, fileName)
-                } catch (e: Exception) {
-                    Log.e("ResetWorker", "restore failed: $fileName", e)
-                }
-            }
-        }
     }
 
     private fun deleteDirectoryContents(directory: DocumentFile?) {
@@ -99,43 +123,6 @@ class ResetWorker(context: Context, workerParams: WorkerParameters) :
             if (file.isDirectory) deleteDirectoryContents(file)
             try { file.delete() }
             catch (e: Exception) { Log.e("ResetWorker", "delete failed: ${file.name}", e) }
-        }
-    }
-
-    @Suppress("DEPRECATION")
-    private fun restoreFileToDownloads(sourceFile: DocumentFile, originalFileName: String) {
-        val resolver = applicationContext.contentResolver
-        val contentValues = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, originalFileName)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/NeatNest_Restored")
-            }
-        }
-
-        val collectionUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-        } else {
-            MediaStore.Files.getContentUri("external")
-        }
-
-        val targetUri = resolver.insert(collectionUri, contentValues)
-        if (targetUri != null) {
-            try {
-                val inputStream = resolver.openInputStream(sourceFile.uri)
-                val outputStream = resolver.openOutputStream(targetUri)
-                if (inputStream != null && outputStream != null) {
-                    inputStream.use { inp -> outputStream.use { out -> inp.copyTo(out) } }
-                    // only delete source after confirmed successful copy
-                    sourceFile.delete()
-                    Log.d("ResetWorker", "restored: $originalFileName")
-                } else {
-                    Log.e("ResetWorker", "stream null for: $originalFileName")
-                    resolver.delete(targetUri, null, null)
-                }
-            } catch (e: Exception) {
-                Log.e("ResetWorker", "copy failed: ${sourceFile.name}", e)
-                resolver.delete(targetUri, null, null)
-            }
         }
     }
 }

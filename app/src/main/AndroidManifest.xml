@@ -26,6 +26,16 @@
         android:theme="@style/Theme.NeatNest">
 
         <activity
+            android:name=".SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.NeatNest">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".UtilityHubActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
@@ -53,10 +63,6 @@
         <activity
             android:name=".MainActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <service

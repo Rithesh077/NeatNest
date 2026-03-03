@@ -2,74 +2,76 @@
 
 ## Overview
 
-NeatNest follows the **MVVM (Model-View-ViewModel)** pattern with **Koin** for dependency injection and **Room** for local persistence. Background work is handled by **WorkManager**, and file access uses Android's **Storage Access Framework (SAF)** for user-selected folders and **MediaStore** for device-wide scans.
+NeatNest uses **MVVM** with **Koin** DI, **Room** persistence, and **WorkManager** for background tasks. File access uses **SAF** for user-selected folders and **MediaStore** for device-wide scans. File classification is powered by a dual-model ML engine (Naive Bayes + TFLite).
+
+**Current Version: 2.1.4.1**
 
 ## Layers
 
-### View Layer (Activities)
+### View Layer
 
-Each screen is an `AppCompatActivity` that observes data from its ViewModel via `StateFlow` or `LiveData`:
-
-| Activity                     | ViewModel                | Purpose                                                |
-| ---------------------------- | ------------------------ | ------------------------------------------------------ |
-| `MainActivity`               | `DashboardViewModel`     | Dashboard with counts, recent activity, and navigation |
-| `OnboardingActivity`         | `OnboardingViewModel`    | Folder selection, root directory, scan configuration   |
-| `DigitalAssetHubActivity`    | `AssetHubViewModel`      | Displays organized files, reset functionality          |
-| `SignalNoiseCleanerActivity` | `SignalCleanerViewModel` | Displays captured notifications, clear functionality   |
-| `FileMoverActivity`          | —                        | Menu and fragment lifecycle demo (no ViewModel needed) |
-| `UtilityHubActivity`         | —                        | Utility tools with rescan                              |
+| Activity                     | ViewModel                | Purpose                                                                          |
+| ---------------------------- | ------------------------ | -------------------------------------------------------------------------------- |
+| `SplashActivity`             | —                        | Animated splash with logo fade-in + progress bar                                 |
+| `MainActivity`               | —                        | Hub launcher with 4 color-coded navigation cards                                 |
+| `OnboardingActivity`         | `OnboardingViewModel`    | Folder selection, root dir, scan config, ML model selection                      |
+| `DigitalAssetHubActivity`    | `AssetHubViewModel`      | Folder cards → file drill-down, re-sync                                          |
+| `SignalNoiseCleanerActivity` | `SignalCleanerViewModel` | Analytics dashboard + notification list                                          |
+| `FileMoverActivity`          | —                        | Developer Mode: toolbar menus, context menus, popup menus, fragments, dialogs    |
+| `UtilityHubActivity`         | —                        | Placeholder tools hub (video editor, file editor, data extractor, price tracker) |
 
 ### ViewModel Layer
 
-ViewModels expose UI state via `StateFlow<UiState<T>>` where `UiState` is a sealed class:
+ViewModels expose `StateFlow<UiState<T>>` where `UiState` is:
 
-- `UiState.Loading` — Initial state
-- `UiState.Success(data)` — Data loaded successfully
-- `UiState.Error(message)` — Error occurred
+- `Loading` → `Success(data)` → or `Error(message)`
+
+| ViewModel                | Repository                                    | Exposes                                         |
+| ------------------------ | --------------------------------------------- | ----------------------------------------------- |
+| `DashboardViewModel`     | FileRepository, NotificationRepository, Prefs | File count, notification count, recent activity |
+| `OnboardingViewModel`    | FileRepository, Prefs                         | Folder selection, config state                  |
+| `AssetHubViewModel`      | FileRepository, Prefs                         | Categories (folder cards), files by category    |
+| `SignalCleanerViewModel` | NotificationRepository                        | Notifications, priority counts, top apps        |
 
 ### Repository Layer
 
-Repositories abstract the data sources (DAOs and SharedPreferences):
-
-- `FileRepository` — File operations, tracked folders, preferences
-- `NotificationRepository` — Notification CRUD operations
+- `FileRepository` — Files, folders, category queries, prefs access
+- `NotificationRepository` — Notification CRUD + analytics queries
 
 ### Data Layer
 
-- **Room Database** (`AppDatabase`) — Stores `ProcessedFile`, `ProcessedNotification`, and `TrackedFolder` entities.
-- **SharedPreferences** (`NeatNestPreferences`) — Stores root URI, onboarding status, move/copy mode, and scan mode.
+- **Room** (`AppDatabase` v5) — `ProcessedFile`, `ProcessedNotification`, `TrackedFolder`
+- **SharedPreferences** (`NeatNestPreferences`) — Root URI, onboarding status, scan mode, classification model
+
+### ML Layer
+
+- `FileClassificationEngine` — Interface + factory (reads model selection from prefs)
+- `NaiveBayesClassifier` — Pure Kotlin, pre-trained word priors, Laplace smoothing, zero dependencies
+- `TFLiteClassifier` — LiteRT wrapper, character-level tokenization, NaiveBayes fallback
 
 ## Background Workers
 
 ### AssetScannerWorker
 
-Runs as a `CoroutineWorker` via WorkManager. Two-pass pipeline:
+Two-pass `CoroutineWorker`:
 
-1. **Pass 1 (Ingestion):** Copies/moves files from source folders (SAF) or MediaStore into the root directory.
-2. **Pass 2 (Classification):** Moves files from root into subdirectories using `DigitalAssetHub` smart classification (Study Material → `Study Material/`, Clutter → `Clutter/`, uncategorized → by extension like `jpg/`).
+1. **Ingestion** — Copy/move files from source into root directory
+2. **Classification** — ML engine sorts files into subdirectories (Study Material, Work Documents, Media, Clutter, or by extension)
 
-Key safety features:
-
-- Files are only deleted after confirmed successful copy.
-- Database `targetPath` is updated after every reclassification move.
-- MediaStore permissions are only required for Complete Scan mode; Pick Folders mode uses SAF permissions.
+Records `engineUsed` and `category` in the DB for each file.
 
 ### ResetWorker
 
-Reverses the organization process:
+Reverse-classification pipeline:
 
-1. Recursively walks the root directory tree (not stale DB paths).
-2. Copies each file to `Downloads/NeatNest_Restored/` via MediaStore.
-3. Only deletes source files after confirmed successful copy.
-4. Clears all database tables and SharedPreferences.
+1. Reads all `ProcessedFile` records from DB
+2. Moves each file back to `originalUri` (creates parent dir if needed)
+3. Falls back to `Restored/` folder if original path is inaccessible
+4. Empties root directory, clears all tables, resets onboarding
 
 ### NotificationService
 
-A `NotificationListenerService` that:
-
-1. Intercepts every posted notification.
-2. Classifies priority using the notification channel importance (API 26+) or legacy priority.
-3. Stores the notification in Room via a coroutine.
+`NotificationListenerService` that intercepts notifications, classifies priority via channel importance, and stores in Room.
 
 ## Dependency Injection (Koin)
 
@@ -77,31 +79,33 @@ Defined in `di/AppModule.kt`:
 
 ```
 single { AppDatabase.build(context) }
-single { get<AppDatabase>().processedFileDao() }
-single { get<AppDatabase>().processedNotificationDao() }
-single { get<AppDatabase>().trackedFolderDao() }
+single { processedFileDao() }
+single { processedNotificationDao() }
+single { trackedFolderDao() }
 single { NeatNestPreferences(context) }
-single { FileRepository(dao, folderDao, prefs) }
-single { NotificationRepository(dao) }
+single { FileRepository(fileDao, folderDao, prefs) }
+single { NotificationRepository(notifDao) }
 viewModel { DashboardViewModel(fileRepo, notifRepo, prefs) }
 viewModel { OnboardingViewModel(fileRepo, prefs) }
 viewModel { AssetHubViewModel(fileRepo, prefs) }
 viewModel { SignalCleanerViewModel(notifRepo) }
 ```
 
-> **Note:** Workers (`AssetScannerWorker`, `ResetWorker`) and `NotificationService` bypass Koin and access `AppDatabase.getDatabase()` directly due to Android framework constraints on worker/service construction.
+> Workers and NotificationService bypass Koin — they access `AppDatabase.getDatabase()` directly.
 
-## Database Schema (Room, Version 4)
+## Database Schema (Room, Version 5)
 
 ### processed_files
 
-| Column      | Type      | Description                |
-| ----------- | --------- | -------------------------- |
-| originalUri | TEXT (PK) | Original file URI          |
-| fileName    | TEXT      | Display name               |
-| targetPath  | TEXT      | Current organized file URI |
-| extension   | TEXT      | File extension             |
-| timestamp   | LONG      | Processing time            |
+| Column      | Type      | Description                                         |
+| ----------- | --------- | --------------------------------------------------- |
+| originalUri | TEXT (PK) | Original file URI                                   |
+| fileName    | TEXT      | Display name                                        |
+| targetPath  | TEXT      | Current organized file URI                          |
+| extension   | TEXT      | File extension                                      |
+| timestamp   | LONG      | Processing time                                     |
+| engineUsed  | TEXT      | Classifier used (NaiveBayes / TFLite / legacy)      |
+| category    | TEXT      | Classification result (Study Material, Media, etc.) |
 
 ### processed_notifications
 
@@ -125,21 +129,56 @@ viewModel { SignalCleanerViewModel(notifRepo) }
 
 ```mermaid
 graph TD
-    A[MainActivity<br/>Launcher] -->|Asset Hub click| B{Onboarding<br/>completed?}
+    A[MainActivity<br/>Hub Launcher] -->|Asset Hub| B{Onboarding<br/>completed?}
     B -->|No| C[OnboardingActivity]
     B -->|Yes| D[DigitalAssetHubActivity]
     C -->|Scan complete| D
     A -->|Signal Cleaner| E[SignalNoiseCleanerActivity]
-    A -->|Re-Sync| F[AssetScannerWorker]
+    A -->|Developer Mode| H[FileMoverActivity]
     A -->|Utility Hub| G[UtilityHubActivity]
-    A -->|Dev Mode| H[FileMoverActivity]
-    D -->|Reset| I[ResetWorker]
+    D -->|Re-Sync| I[ResetWorker]
     I -->|Complete| C
 ```
 
-## Security Measures
+## UI Design System
 
-- `android:allowBackup="false"` — Prevents database extraction via ADB.
-- `fallbackToDestructiveMigration(false)` — Forces explicit migrations instead of silent data wipes.
-- SAF URI permissions — Only requests READ+WRITE when move mode is enabled.
-- Permission separation — Complete Scan requires MediaStore permissions; Pick Folders uses SAF only.
+Section-specific color palettes with tinted card backgrounds:
+
+| Section           | Accent    | Light Tint | Dark Text |
+| ----------------- | --------- | ---------- | --------- |
+| Digital Asset Hub | `#2E7D32` | `#E8F5E9`  | `#1B5E20` |
+| Signal Cleaner    | `#00897B` | `#E0F2F1`  | `#00695C` |
+| Developer Mode    | `#7B1FA2` | `#F3E5F5`  | `#6A1B9A` |
+| Utility Hub       | `#1976D2` | `#E3F2FD`  | `#1565C0` |
+
+Background: `#F0F0F0` (light grey)
+Status bar: `#0F3814` (dark green)
+Navigation bar: `#F0F0F0` (light grey, dark icons)
+
+## Dependencies
+
+| Library             | Purpose                                              |
+| ------------------- | ---------------------------------------------------- |
+| Room + KSP          | Local persistence with compile-time SQL verification |
+| WorkManager         | Background scan/reset operations                     |
+| Koin                | Lightweight dependency injection                     |
+| Material Components | Material Design 3 theming                            |
+| TFLite / LiteRT     | On-device ML inference                               |
+| Coil                | Image loading                                        |
+| Lottie              | Rich animations                                      |
+| DocumentFile        | SAF directory traversal                              |
+| Navigation          | Fragment navigation (used in Developer Mode)         |
+
+## Build Config
+
+- `minSdk = 24` (Android 7.0)
+- `targetSdk = 36` (Android 16)
+- `compileSdk = 36`
+- `versionName = "2.1.4.1"`
+
+## Security
+
+- `android:allowBackup="false"` — Prevents DB extraction via ADB
+- `fallbackToDestructiveMigration(false)` — Forces explicit migrations
+- SAF URI permissions — READ+WRITE only when move mode is enabled
+- Permission separation — Complete Scan uses MediaStore; Pick Folders uses SAF only

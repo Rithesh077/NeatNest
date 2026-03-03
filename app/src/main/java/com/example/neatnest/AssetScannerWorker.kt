@@ -94,6 +94,11 @@ class AssetScannerWorker(context: Context, workerParams: WorkerParameters) :
     // classifies files inside root into subdirectories using digitalassethub for smart
     // categorization, then by extension. updates db paths after each successful move.
     private suspend fun classifyFilesInsideRoot(rootDir: DocumentFile, dao: ProcessedFileDao) {
+        // get the engine name for tracking
+        val engine = com.example.neatnest.ml.FileClassificationEngine.create(applicationContext)
+        val engineName = engine.engineName()
+        engine.close()
+
         rootDir.listFiles().forEach { file ->
             if (file.isFile) {
                 val fileName = file.name ?: return@forEach
@@ -101,10 +106,12 @@ class AssetScannerWorker(context: Context, workerParams: WorkerParameters) :
                 val ext = fileName.substringAfterLast('.', "").lowercase()
                 if (ext.isEmpty()) return@forEach
 
-                // use digitalassethub to determine the top-level category
-                val assetType = DigitalAssetHub.classifyByName(fileName)
+                // use ml-powered classification engine (naive bayes or tflite)
+                val assetType = DigitalAssetHub.classifyWithML(applicationContext, fileName, ext, mimeType)
                 val categoryDir = when (assetType) {
                     DigitalAssetHub.AssetType.STUDY_MATERIAL -> "Study Material"
+                    DigitalAssetHub.AssetType.WORK_DOCUMENT -> "Work Documents"
+                    DigitalAssetHub.AssetType.MEDIA -> "Media"
                     DigitalAssetHub.AssetType.DIGITAL_CLUTTER -> "Clutter"
                     DigitalAssetHub.AssetType.UNCATEGORIZED -> ext
                 }
@@ -119,13 +126,26 @@ class AssetScannerWorker(context: Context, workerParams: WorkerParameters) :
                     if (dir.findFile(fileName) == null) {
                         val copiedFile = FileMover.copyFileToDirectory(applicationContext, file.uri, dir, fileName, mimeType)
                         if (copiedFile != null) {
-                            // update the db record so targetpath stays accurate
-                            val oldPath = file.uri.toString()
+                            val rootCopyPath = file.uri.toString()
                             val newPath = copiedFile.uri.toString()
                             try {
-                                dao.updateTargetPath(oldPath, newPath)
+                                // look up the existing record to get the real source URI
+                                val existingRecord = dao.getFileByTargetPath(rootCopyPath)
+                                val realOriginalUri = existingRecord?.originalUri ?: rootCopyPath
+
+                                // update with real originalUri, new path, engine, and category
+                                dao.insertProcessedFile(
+                                    ProcessedFile(
+                                        originalUri = realOriginalUri,
+                                        fileName = fileName,
+                                        targetPath = newPath,
+                                        extension = ext,
+                                        engineUsed = engineName,
+                                        category = categoryDir
+                                    )
+                                )
                             } catch (e: Exception) {
-                                Log.e("AssetScannerWorker", "db path update failed: $fileName", e)
+                                Log.e("AssetScannerWorker", "db update failed: $fileName", e)
                             }
                             // only delete the original after confirmed successful copy and db update
                             file.delete()
