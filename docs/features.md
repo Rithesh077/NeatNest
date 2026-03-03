@@ -1,6 +1,8 @@
 # Features Guide
 
-## 1. Digital Asset Hub
+## Version 1.0.0 Features
+
+### 1. Digital Asset Hub
 
 ### Overview
 
@@ -39,7 +41,7 @@ From the Digital Asset Hub screen, tap "Reset and Start Over" to:
 
 ---
 
-## 2. Signal Noise Cleaner
+### 2. Signal Noise Cleaner
 
 ### Overview
 
@@ -65,7 +67,7 @@ The notification listener must be explicitly enabled in Android system settings.
 
 ---
 
-## 3. Dev Mode
+### 3. Dev Mode
 
 ### Overview
 
@@ -93,7 +95,7 @@ The toolbar color uses the app's `colorPrimary` (`#1B5E20`, dark green).
 
 ---
 
-## 4. Utility Hub
+### 4. Utility Hub
 
 ### Overview
 
@@ -112,7 +114,7 @@ A tools hub with rescan functionality and placeholders for upcoming features.
 
 ---
 
-## 5. Dashboard (Main Screen)
+### 5. Dashboard (Main Screen)
 
 ### System Status
 

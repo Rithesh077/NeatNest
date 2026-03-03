@@ -91,8 +91,8 @@ class AssetScannerWorker(context: Context, workerParams: WorkerParameters) :
         }
     }
 
-    // classifies files inside root into subdirectories using DigitalAssetHub for smart
-    // categorization, then by extension. updates DB paths after each successful move.
+    // classifies files inside root into subdirectories using digitalassethub for smart
+    // categorization, then by extension. updates db paths after each successful move.
     private suspend fun classifyFilesInsideRoot(rootDir: DocumentFile, dao: ProcessedFileDao) {
         rootDir.listFiles().forEach { file ->
             if (file.isFile) {
@@ -101,7 +101,7 @@ class AssetScannerWorker(context: Context, workerParams: WorkerParameters) :
                 val ext = fileName.substringAfterLast('.', "").lowercase()
                 if (ext.isEmpty()) return@forEach
 
-                // use DigitalAssetHub to determine the top-level category
+                // use digitalassethub to determine the top-level category
                 val assetType = DigitalAssetHub.classifyByName(fileName)
                 val categoryDir = when (assetType) {
                     DigitalAssetHub.AssetType.STUDY_MATERIAL -> "Study Material"
@@ -119,15 +119,15 @@ class AssetScannerWorker(context: Context, workerParams: WorkerParameters) :
                     if (dir.findFile(fileName) == null) {
                         val copiedFile = FileMover.copyFileToDirectory(applicationContext, file.uri, dir, fileName, mimeType)
                         if (copiedFile != null) {
-                            // update the DB record so targetPath stays accurate
+                            // update the db record so targetpath stays accurate
                             val oldPath = file.uri.toString()
                             val newPath = copiedFile.uri.toString()
                             try {
                                 dao.updateTargetPath(oldPath, newPath)
                             } catch (e: Exception) {
-                                Log.e("AssetScannerWorker", "DB path update failed: $fileName", e)
+                                Log.e("AssetScannerWorker", "db path update failed: $fileName", e)
                             }
-                            // only delete the original after confirmed successful copy and DB update
+                            // only delete the original after confirmed successful copy and db update
                             file.delete()
                         } else {
                             Log.e("AssetScannerWorker", "copy to subdirectory failed, keeping original: $fileName")
