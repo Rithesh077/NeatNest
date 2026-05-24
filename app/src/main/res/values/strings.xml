@@ -130,8 +130,8 @@
     <string name="feature_coming_soon">This feature is in development</string>
 
     <!-- dev mode card -->
-    <string name="dev_mode_card_title">Device Analyzer</string>
-    <string name="dev_mode_card_subtitle">Menus, fragments and lifecycle tools</string>
+    <string name="dev_mode_card_title">Device Analyser</string>
+    <string name="dev_mode_card_subtitle">Real-time stats, charts and reports</string>
     <string name="coming_soon_badge">Soon</string>
 
     <!-- status labels -->
@@ -159,12 +159,12 @@
     <string name="clear_noise_confirm">Clear All</string>
     <string name="noise_cleared">All noise cleared</string>
 
-    <!-- file mover / menu demo screen -->
-    <string name="long_press_context">Long press for context menu</string>
-    <string name="show_popup_menu">Show Popup Menu</string>
-
-    <!-- fragment lifecycle -->
-    <string name="lifecycle_log_title">Fragment Lifecycle Log</string>
+    <!-- device analyser -->
+    <string name="analyser_title">Device Analyser</string>
+    <string name="tab_overview">Overview</string>
+    <string name="tab_storage">Storage</string>
+    <string name="tab_performance">Performance</string>
+    <string name="tab_network">Network</string>
 
     <!-- scan pipeline status -->
     <string name="scan_in_progress">Scanning and organizing files</string>

@@ -6,10 +6,10 @@
 
 Clean hub launcher on a light grey (#F0F0F0) background with branding header and 4 color-coded navigation cards:
 
-- 🟢 **Digital Asset Hub** — File organization with ML classification (green tint)
-- 🩵 **Signal Noise Cleaner** — Notification analytics and management (teal tint)
-- 🟣 **Developer Mode** — Menus, fragments, and dialog demos (purple tint)
-- 🔵 **Utility Hub** — Placeholder tools (blue tint)
+- **Digital Asset Hub** — File organization with ML classification (green tint)
+- **Signal Noise Cleaner** — Notification analytics and management (teal tint)
+- **Developer Mode** — Menus, fragments, and dialog demos (purple tint)
+- **Utility Hub** — Placeholder tools (blue tint)
 
 Each card has a 4dp colored accent bar, section icon, and subtitle. Staggered entrance animations on load. Logo fade-in animation.
 

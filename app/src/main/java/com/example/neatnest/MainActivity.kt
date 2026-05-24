@@ -16,11 +16,11 @@ class MainActivity : AppCompatActivity() {
 
         val cardAssetHub = findViewById<MaterialCardView>(R.id.cardAssetHub)
         val cardSignalCleaner = findViewById<MaterialCardView>(R.id.cardSignalCleaner)
-        val cardDevMode = findViewById<MaterialCardView>(R.id.cardDevMode)
+        val cardDeviceAnalyser = findViewById<MaterialCardView>(R.id.cardDeviceAnalyser)
         val cardUtilityHub = findViewById<MaterialCardView>(R.id.cardUtilityHub)
 
         // staggered card entrance animations
-        animateCardsEntrance(cardAssetHub, cardSignalCleaner, cardDevMode, cardUtilityHub)
+        animateCardsEntrance(cardAssetHub, cardSignalCleaner, cardDeviceAnalyser, cardUtilityHub)
 
         // logo fade-in
         val ivLogo = findViewById<View>(R.id.ivLogo)
@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity() {
 
         // navigation handlers
         cardAssetHub.setOnClickListener {
-            // check if onboarding is done; if not, go to onboarding first
             val prefs = getSharedPreferences("NeatNestPrefs", MODE_PRIVATE)
             val onboarded = prefs.getBoolean("onboarding_completed", false)
             if (onboarded) {
@@ -44,8 +43,8 @@ class MainActivity : AppCompatActivity() {
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
-        cardDevMode.setOnClickListener {
-            startActivity(Intent(this, FileMoverActivity::class.java))
+        cardDeviceAnalyser.setOnClickListener {
+            startActivity(Intent(this, DeviceAnalyserActivity::class.java))
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 

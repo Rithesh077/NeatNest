@@ -83,6 +83,9 @@ dependencies {
     implementation(libs.tflite)
     implementation(libs.tflite.support)
 
+    // charts (device analyser)
+    implementation(libs.mpandroidchart)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -8,7 +8,7 @@ NeatNest is an Android application that combines ML-powered file organization, r
 
 ## Features
 
-### Digital Asset Hub 🟢
+### Digital Asset Hub
 
 - **ML-Powered Classification** — Dual-model engine: Naive Bayes (Kotlin) or TFLite neural network
 - **File Scanning** — SAF (pick folders) or MediaStore (device-wide)
@@ -16,19 +16,19 @@ NeatNest is an Android application that combines ML-powered file organization, r
 - **Move or Copy** — Delete originals or keep them safely
 - **Re-Sync** — Restore all files to their original locations, reset app state
 
-### Signal Noise Cleaner 🩵
+### Signal Noise Cleaner
 
 - **Real-time Notification Capture** — NotificationListenerService intercepts all notifications
 - **Priority Classification** — High, Normal, Low priority with analytics
 - **Analytics Dashboard** — Priority breakdown, top 5 apps by notification volume
 - **Bulk Clear** — One-tap to wipe all captured notifications
 
-### Developer Mode 🟣
+### Developer Mode
 
 - Toolbar menus, context menus, popup menus, fragment lifecycle, AlertDialogs
 - _Planned replacement: Device Analyser (v2.1.5.1)_
 
-### Utility Hub 🔵
+### Utility Hub
 
 - Placeholder tools: Video Editor, File Editor, Data Extractor, Price Tracker
 

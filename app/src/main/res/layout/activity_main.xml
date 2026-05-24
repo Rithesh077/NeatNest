@@ -163,9 +163,9 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Developer Mode -->
+        <!-- Device Analyser -->
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardDevMode"
+            android:id="@+id/cardDeviceAnalyser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"

@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/action_archive"
-        android:title="Archive"
-        android:icon="@drawable/ic_archive" />
-    <item
-        android:id="@+id/action_move"
-        android:title="Move"
-        android:icon="@drawable/ic_move" />
+    <item android:id="@+id/range_1h" android:title="Last 1 Hour" />
+    <item android:id="@+id/range_6h" android:title="Last 6 Hours" />
+    <item android:id="@+id/range_24h" android:title="Last 24 Hours" />
+    <item android:id="@+id/range_7d" android:title="Last 7 Days" />
 </menu>
